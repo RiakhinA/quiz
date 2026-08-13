@@ -909,6 +909,8 @@ let answerIdx = [];     // stored answer index per question (for map)
 let selectedOpts = [];
 let userName = '';
 let wallRevealed = false;
+let quizStartedTracked = false;
+let quizCompletedTracked = false;
 
 // ============ LANG ============
 function setLang(l) {
@@ -939,7 +941,14 @@ function goTo(screen) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + screen).classList.add('active');
   window.scrollTo(0, 0);
-  if (screen === 'quiz') { renderQuestion(); }
+  if (screen === 'quiz') {
+    if (!quizStartedTracked) {
+      quizStartedTracked = true;
+      try { gtag('event', 'quiz_start'); } catch (e) {}
+      try { if (typeof fbq === 'function') fbq('track', 'ViewContent', {content_name: 'Quiz started'}); } catch (e) {}
+    }
+    renderQuestion();
+  }
   if (screen === 'loader') runLoader();
   if (screen === 'result') showResult();
 }
@@ -1024,6 +1033,11 @@ function renderResultTexts() {
 }
 
 function showResult() {
+  if (!quizCompletedTracked) {
+    quizCompletedTracked = true;
+    try { gtag('event', 'quiz_complete'); } catch (e) {}
+    try { if (typeof fbq === 'function') fbq('track', 'CompleteRegistration', {content_name: 'Quiz completed'}); } catch (e) {}
+  }
   wallRevealed = false;
   renderResultTexts();
   buildMap();
