@@ -1,0 +1,76 @@
+name: Fix quiz
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch index.html
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+          s = s.replace("document.getElementById('progressFill').style.width = ((currentQ / qs.length) * 100) + '%';", "document.getElementById('progressFill').style.width = (((currentQ + 1) / qs.length) * 100) + '%';")
+          s = s.replace("  selectedOpts = [];\n\n  document.getElementById('qLabel')", "  selectedOpts = Array.isArray(answerIdx[currentQ]) ? answerIdx[currentQ].slice() : [];\n\n  document.getElementById('qLabel')")
+          s = s.replace("    card.onclick = () => selectOpt(card, i, q.multi);\n    grid.appendChild(card);", "    if (selectedOpts.includes(i)) card.classList.add('selected');\n    card.onclick = () => selectOpt(card, i, q.multi);\n    grid.appendChild(card);")
+          s = s.replace("  btnNext.disabled = true;\n}\n\nfunction selectOpt", "  btnNext.disabled = q.multi ? selectedOpts.length === 0 : false;\n}\n\nfunction selectOpt", 1)
+          start = s.index('async function submitForm() {')
+          end = s.index('\nfunction escapeHtml', start)
+          new = '''async function submitForm() {
+  const nameEl = document.getElementById('inputName');
+  const contactEl = document.getElementById('inputContact');
+  const name = nameEl.value.trim();
+  const contact = contactEl.value.trim();
+  let ok = true;
+  if (!name) { nameEl.classList.add('error'); ok = false; }
+  if (!validContact(contact)) { contactEl.classList.add('error'); ok = false; }
+  if (!ok) return;
+
+  userName = name;
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true;
+  const oldLabel = btn.querySelector('span').textContent;
+  btn.querySelector('span').textContent = '...';
+
+  const t = T[lang];
+  const qs = t.questions;
+  const answerTexts = qs.map((q, i) => (answerIdx[i] || []).map(idx => q.opts[idx]?.t).filter(Boolean).join(', '));
+
+  try {
+    const response = await fetch('/api/send-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, contact, lang, answerTexts, questions: qs.map(q => q.q) })
+    });
+    if (!response.ok) throw new Error('Lead endpoint returned ' + response.status);
+
+    try { gtag('event', 'generate_lead'); } catch (e) {}
+    try { if (typeof fbq === 'function') fbq('track', 'Lead'); } catch (e) {}
+    showThanks();
+  } catch (e) {
+    console.error('Lead submission error:', e);
+    btn.disabled = false;
+    btn.querySelector('span').textContent = oldLabel;
+    alert(lang === 'uk' ? 'Не вдалося надіслати заявку. Спробуйте ще раз.' : 'Не удалось отправить заявку. Попробуйте ещё раз.');
+  }
+}
+'''
+          s = s[:start] + new + s[end:]
+          p.write_text(s)
+          PY
+      - name: Commit fixes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Fix quiz navigation and secure lead submission'
+          git push
