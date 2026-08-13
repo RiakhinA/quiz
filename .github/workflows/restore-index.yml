@@ -1,0 +1,23 @@
+name: Restore stable index
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore stable index and mobile layout
+        run: |
+          git checkout 443d4c23ac539184f6482f9e1680ec05b2e9f0e2 -- index.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Restore stable quiz page and mobile layout'
+          git push
