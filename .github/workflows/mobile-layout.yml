@@ -1,0 +1,109 @@
+name: Fix mobile layout
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch responsive layout
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          start = s.find('<!-- MOBILE_LAYOUT_FIX_START -->')
+          end = s.find('<!-- MOBILE_LAYOUT_FIX_END -->')
+          css = '''<!-- MOBILE_LAYOUT_FIX_START -->
+          <style id="mobile-layout-fix">
+          /* Keep the hero content and CTA in normal document flow. */
+          .hero-wrap, .hero-left, .photo-card { position: relative; }
+          .hero-left { z-index: 2; min-width: 0; }
+          .photo-card { z-index: 1; }
+
+          @media (max-width: 960px) {
+            .hero-wrap {
+              display: flex !important;
+              flex-direction: column !important;
+              align-items: stretch !important;
+              gap: 28px !important;
+              padding: 32px 18px 56px !important;
+              width: 100% !important;
+              max-width: 100% !important;
+            }
+            .hero-left {
+              order: 1 !important;
+              width: 100% !important;
+              max-width: 680px !important;
+              margin: 0 auto !important;
+            }
+            .photo-card {
+              order: 2 !important;
+              width: min(100%, 390px) !important;
+              max-width: 390px !important;
+              margin: 0 auto !important;
+              flex: 0 0 auto !important;
+              transform: none !important;
+            }
+            .btn-primary {
+              display: flex !important;
+              width: 100% !important;
+              justify-content: center !important;
+              align-items: center !important;
+              margin: 0 0 30px !important;
+              position: relative !important;
+              z-index: 5 !important;
+            }
+            .facts { position: relative !important; z-index: 2 !important; }
+            .value-promise { max-width: none !important; }
+          }
+
+          @media (max-width: 560px) {
+            .lang-bar {
+              position: relative !important;
+              top: auto !important;
+            }
+            .hero-wrap {
+              padding: 24px 16px 44px !important;
+              gap: 24px !important;
+            }
+            .hero-title { font-size: clamp(30px, 9vw, 42px) !important; }
+            .hero-sub { font-size: 16px !important; }
+            .value-promise { padding: 20px !important; margin-bottom: 24px !important; }
+            .photo-card { width: min(100%, 360px) !important; }
+            .photo-ph { aspect-ratio: 4 / 5 !important; }
+            .photo-foot { padding: 18px 20px !important; }
+            .facts { gap: 20px !important; }
+          }
+
+          /* Result map must never overlap the surrounding content. */
+          .result-wrap, .map-frame, .map-svg-wrap, #mapSvg, .map-cta-hint {
+            position: relative !important;
+          }
+          .map-frame { overflow: hidden !important; }
+          .map-svg-wrap { width: 100% !important; overflow: hidden !important; }
+          #mapSvg { display: block !important; width: 100% !important; height: auto !important; max-width: 100% !important; }
+          .map-cta-hint { z-index: 3 !important; }
+          </style>
+          <!-- MOBILE_LAYOUT_FIX_END -->'''
+          if start >= 0 and end > start:
+              s = s[:start] + css + s[end + len('<!-- MOBILE_LAYOUT_FIX_END -->'):]
+          else:
+              s = s.replace('</head>', css + '\n</head>', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit patched HTML
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Fix mobile hero and result layout'
+          git push
