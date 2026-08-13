@@ -1,0 +1,13 @@
+name: Archive export
+on:
+  push:
+    branches: [main]
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quiz-project
+          path: .
