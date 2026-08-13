@@ -1,0 +1,38 @@
+name: Add Meta funnel events
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-meta-funnel-events.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch quiz funnel events
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          s = s.replace("let userName = '';\nlet wallRevealed = false;", "let userName = '';\nlet wallRevealed = false;\nlet quizStartedTracked = false;\nlet quizCompletedTracked = false;", 1)
+
+          s = s.replace("if (screen === 'quiz') { renderQuestion(); }", "if (screen === 'quiz') {\n    if (!quizStartedTracked) {\n      quizStartedTracked = true;\n      try { gtag('event', 'quiz_start'); } catch (e) {}\n      try { if (typeof fbq === 'function') fbq('track', 'ViewContent', {content_name: 'Quiz started'}); } catch (e) {}\n    }\n    renderQuestion();\n  }", 1)
+
+          s = s.replace("function showResult() {\n  wallRevealed = false;", "function showResult() {\n  if (!quizCompletedTracked) {\n    quizCompletedTracked = true;\n    try { gtag('event', 'quiz_complete'); } catch (e) {}\n    try { if (typeof fbq === 'function') fbq('track', 'CompleteRegistration', {content_name: 'Quiz completed'}); } catch (e) {}\n  }\n  wallRevealed = false;", 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Add Meta quiz funnel events"
+          git push
