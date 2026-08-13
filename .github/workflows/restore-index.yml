@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Restore stable index and mobile layout
         run: |
           git checkout 443d4c23ac539184f6482f9e1680ec05b2e9f0e2 -- index.html
