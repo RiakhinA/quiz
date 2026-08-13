@@ -1,0 +1,60 @@
+name: Add UTM tracking
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-utm-tracking.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch UTM tracking
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          old = "let wallRevealed = false;\nlet quizStartedTracked = false;"
+          new = "let wallRevealed = false;\nconst urlParams = new URLSearchParams(window.location.search);\nconst utm = {\n  source: urlParams.get('utm_source') || '',\n  medium: urlParams.get('utm_medium') || '',\n  campaign: urlParams.get('utm_campaign') || '',\n  content: urlParams.get('utm_content') || '',\n  term: urlParams.get('utm_term') || ''\n};\nlet quizStartedTracked = false;"
+          if old not in s:
+              raise SystemExit('State anchor not found')
+          s = s.replace(old, new, 1)
+
+          old = "body:JSON.stringify({name,contact,lang,answerTexts,questions:qs.map(q=>q.q)})"
+          new = "body:JSON.stringify({name,contact,lang,answerTexts,questions:qs.map(q=>q.q),utm})"
+          if old not in s:
+              raise SystemExit('Payload anchor not found')
+          s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+
+          p = Path('api/send-lead.js')
+          s = p.read_text(encoding='utf-8')
+
+          old = "const { name, contact, lang, answerTexts = [], questions = [] } = req.body || {};"
+          new = "const { name, contact, lang, answerTexts = [], questions = [], utm = {} } = req.body || {};"
+          if old not in s:
+              raise SystemExit('API destructure anchor not found')
+          s = s.replace(old, new, 1)
+
+          old = "text += `<b>Имя:</b> ${esc(name)}\\n<b>Контакт:</b> ${esc(contact)}\\n<b>Язык:</b> ${esc(lang).toUpperCase()}\\n\\n<b>Ответы:</b>\\n`;"
+          new = "text += `<b>Имя:</b> ${esc(name)}\\n<b>Контакт:</b> ${esc(contact)}\\n<b>Язык:</b> ${esc(lang).toUpperCase()}\\n`;\n  if (utm && (utm.source || utm.medium || utm.campaign || utm.content || utm.term)) {\n    text += `<b>Источник:</b> ${esc(utm.source || '—')} / ${esc(utm.medium || '—')} / ${esc(utm.campaign || '—')}\\n`;\n    if (utm.content) text += `<b>UTM content:</b> ${esc(utm.content)}\\n`;\n    if (utm.term) text += `<b>UTM term:</b> ${esc(utm.term)}\\n`;\n  }\n  text += `\\n<b>Ответы:</b>\\n`;"
+          if old not in s:
+              raise SystemExit('Telegram text anchor not found')
+          s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html api/send-lead.js
+          git diff --cached --quiet && exit 0
+          git commit -m "Add UTM tracking to quiz leads"
+          git push
