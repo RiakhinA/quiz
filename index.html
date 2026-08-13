@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Антон Ряхін | Карта виходу з тупика</title>
+
+<!-- GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-42E5G93TPE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-42E5G93TPE');
+</script>
+
+<!-- Meta Pixel placeholder -->
+<script>
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+  document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  // fbq('init', 'YOUR_PIXEL_ID');
+  // fbq('track', 'PageView');
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --cream: #FAF8F4;
+  --white: #FFFFFF;
+  --teal: #2E6E6B;
+  --teal-light: #E9F2F1;
+  --teal-dark: #1F4F4D;
+  --teal-glow: rgba(46,110,107,0.15);
+  --text: #1A1D1C;
+  --muted: #6E7573;
+  --border: #E6E2DB;
+  --clay: #BE7B4E;
+  --clay-light: #FAF0E7;
+  --danger: #C0563E;
+  --danger-light: #FBEEEA;
+  --shadow-sm: 0 2px 12px rgba(26,29,28,0.05);
+  --shadow: 0 8px 32px rgba(26,29,28,0.09);
+  --radius: 18px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Manrope', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.screen { display: none; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; }
+
+svg { display: block; }
+
+/* LANG BAR */
+.lang-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: rgba(250,248,244,0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.brand-mark {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--teal-dark);
+  letter-spacing: -0.01em;
+}
+.lang-switch { display: flex; gap: 4px; background: var(--white); padding: 3px; border-radius: 10px; border: 1px solid var(--border); }
+.lang-btn {
+  background: none; border: none; border-radius: 7px;
+  padding: 5px 13px; font-family: 'Manrope', sans-serif;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  color: var(--muted); transition: all 0.2s;
+}
+.lang-btn.active { background: var(--teal); color: #fff; }
+
+/* ===== HERO ===== */
+.hero-wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding: 56px 24px 72px;
+  display: grid; grid-template-columns: 1fr 360px;
+  gap: 56px; align-items: center; flex: 1;
+}
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--teal-light); color: var(--teal-dark);
+  border-radius: 30px; padding: 7px 16px;
+  font-size: 13px; font-weight: 700; margin-bottom: 26px;
+  letter-spacing: 0.01em;
+}
+.eyebrow svg { width: 15px; height: 15px; }
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 4.2vw, 50px);
+  font-weight: 600; line-height: 1.15;
+  letter-spacing: -0.01em; margin-bottom: 22px;
+}
+.hero-title em { font-style: italic; color: var(--teal); }
+.hero-sub {
+  font-size: 17px; color: var(--muted);
+  margin-bottom: 32px; max-width: 520px; line-height: 1.65;
+}
+.value-promise {
+  display: flex; flex-direction: column; gap: 12px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 22px 24px;
+  margin-bottom: 32px; max-width: 520px; box-shadow: var(--shadow-sm);
+}
+.value-promise-head {
+  font-size: 12px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--teal); margin-bottom: 2px;
+}
+.value-item { display: flex; align-items: flex-start; gap: 12px; }
+.value-item svg { width: 20px; height: 20px; color: var(--teal); flex-shrink: 0; margin-top: 2px; }
+.value-item span { font-size: 14.5px; color: var(--text); font-weight: 500; }
+.value-item b { font-weight: 700; }
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--teal); color: #fff; border: none;
+  border-radius: 14px; padding: 18px 34px;
+  font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 700;
+  cursor: pointer; transition: all 0.22s; margin-bottom: 42px;
+}
+.btn-primary:hover { background: var(--teal-dark); transform: translateY(-2px); box-shadow: 0 10px 28px var(--teal-glow); }
+.btn-primary svg { width: 18px; height: 18px; }
+
+.facts { display: flex; gap: 36px; flex-wrap: wrap; }
+.fact-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 30px; font-weight: 600; color: var(--teal);
+  line-height: 1; margin-bottom: 6px;
+}
+.fact-label { font-size: 13px; color: var(--muted); max-width: 130px; }
+
+.photo-card {
+  background: var(--white); border-radius: 22px; overflow: hidden;
+  box-shadow: var(--shadow); border: 1px solid var(--border);
+}
+.photo-ph {
+  width: 100%; aspect-ratio: 4/5;
+  background: linear-gradient(160deg, #E9F2F1 0%, #D3E7E5 100%);
+  display: block; overflow: hidden;
+}
+.photo-ph img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  display: block;
+}
+.photo-foot { padding: 20px 22px; border-top: 1px solid var(--border); }
+.photo-foot strong { display: block; font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.photo-foot span { font-size: 13px; color: var(--muted); line-height: 1.4; }
+
+/* ===== QUIZ ===== */
+.quiz-wrap { max-width: 660px; margin: 0 auto; padding: 36px 24px 64px; flex: 1; width: 100%; }
+.quiz-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+.quiz-step-label { font-size: 13px; color: var(--muted); font-weight: 700; }
+.quiz-mini-map-hint { font-size: 12px; color: var(--teal); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+.quiz-mini-map-hint svg { width: 13px; height: 13px; }
+.progress-bar { height: 6px; background: var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 18px; }
+.progress-fill { height: 100%; background: var(--teal); border-radius: 10px; transition: width 0.45s cubic-bezier(0.4,0,0.2,1); }
+
+.quiz-gift-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--clay-light); border: 1px solid #EAD3BC;
+  border-radius: 11px; padding: 11px 16px; margin-bottom: 30px;
+  font-size: 13px; color: #9A6236; font-weight: 600;
+}
+.quiz-gift-bar svg { width: 17px; height: 17px; color: var(--clay); flex-shrink: 0; }
+
+.q-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 3.2vw, 29px);
+  font-weight: 600; margin-bottom: 26px; line-height: 1.3;
+}
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+.option-card {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 18px 16px; cursor: pointer;
+  transition: all 0.18s; text-align: left;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.option-card:hover { border-color: var(--teal); background: var(--teal-light); transform: translateY(-1px); }
+.option-card.selected { border-color: var(--teal); background: var(--teal-light); box-shadow: 0 0 0 1px var(--teal); }
+.opt-icon { width: 26px; height: 26px; color: var(--teal); }
+.opt-icon svg { width: 26px; height: 26px; }
+.opt-title { font-size: 14px; font-weight: 700; line-height: 1.3; }
+.opt-sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+.quiz-nav { display: flex; gap: 12px; }
+.btn-back {
+  background: none; border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 14px 22px; font-family: 'Manrope', sans-serif;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  color: var(--muted); transition: all 0.2s;
+}
+.btn-back:hover { border-color: var(--teal); color: var(--teal); }
+.btn-next {
+  flex: 1; background: var(--teal); border: none; border-radius: 12px;
+  padding: 16px; font-family: 'Manrope', sans-serif;
+  font-size: 15px; font-weight: 700; color: #fff; cursor: pointer; transition: all 0.2s;
+}
+.btn-next:hover { background: var(--teal-dark); }
+.btn-next:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ===== RESULT / MAP ===== */
+.result-wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px 72px; flex: 1; width: 100%; }
+.result-head { text-align: center; margin-bottom: 28px; }
+.result-icon-state {
+  width: 56px; height: 56px; margin: 0 auto 18px;
+  background: var(--teal-light); border-radius: 16px;
+  display: flex; align-items: center; justify-content: center; color: var(--teal);
+}
+.result-icon-state svg { width: 30px; height: 30px; }
+.result-title { font-family: 'Playfair Display', serif; font-size: clamp(24px, 3.5vw, 34px); font-weight: 600; line-height: 1.25; }
+
+/* MAP CANVAS */
+.map-frame {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 22px; padding: 24px; margin-bottom: 24px;
+  box-shadow: var(--shadow); overflow: hidden; position: relative;
+}
+.map-svg-wrap { width: 100%; position: relative; }
+#mapSvg { width: 100%; height: auto; }
+
+.map-cta-hint {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--teal); color: #fff; border: none; width: 100%;
+  border-radius: 12px; padding: 15px; margin-top: 18px;
+  font-family: 'Manrope', sans-serif; font-size: 14.5px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; animation: pulse 1.8s infinite;
+}
+.map-cta-hint svg { width: 18px; height: 18px; }
+.map-cta-hint:hover { background: var(--teal-dark); animation: none; }
+.map-cta-hint.hidden { display: none; }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--teal-glow); }
+  50% { box-shadow: 0 0 0 10px rgba(46,110,107,0); }
+}
+
+.insight-blocks { display: flex; flex-direction: column; gap: 14px; margin-bottom: 8px; }
+.insight-block {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px 26px;
+  opacity: 0; transform: translateY(16px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.insight-block.show { opacity: 1; transform: translateY(0); }
+.insight-block-label {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--teal); margin-bottom: 12px;
+}
+.insight-block-label svg { width: 15px; height: 15px; }
+.insight-block p { font-size: 15px; line-height: 1.65; color: var(--text); margin-bottom: 10px; }
+.insight-block p:last-child { margin-bottom: 0; }
+.insight-accent {
+  margin-top: 14px; padding: 12px 16px; background: var(--teal-light);
+  border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--teal-dark);
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.insight-accent svg { width: 17px; height: 17px; flex-shrink: 0; margin-top: 1px; }
+
+.result-form-trigger { text-align: center; margin-top: 28px; opacity: 0; transform: translateY(16px); transition: all 0.5s; }
+.result-form-trigger.show { opacity: 1; transform: translateY(0); }
+
+/* ===== FORM ===== */
+.form-outer { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
+.form-card {
+  background: var(--white); border-radius: 22px; padding: 44px;
+  max-width: 520px; width: 100%; box-shadow: var(--shadow); border: 1px solid var(--border);
+}
+.form-eyebrow {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--teal-light); color: var(--teal-dark);
+  border-radius: 30px; padding: 6px 14px; font-size: 12px;
+  font-weight: 800; margin-bottom: 18px; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.form-eyebrow svg { width: 14px; height: 14px; }
+.form-title { font-family: 'Playfair Display', serif; font-size: 25px; font-weight: 600; margin-bottom: 22px; line-height: 1.3; }
+.form-gift {
+  display: flex; align-items: center; gap: 11px;
+  background: var(--clay-light); border: 1px solid #EAD3BC;
+  border-radius: 12px; padding: 13px 17px; margin-bottom: 14px;
+  font-size: 14px; font-weight: 600; color: #9A6236;
+}
+.form-gift svg { width: 18px; height: 18px; color: var(--clay); flex-shrink: 0; }
+.deficit-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--danger-light); border: 1px solid #F0CFC5;
+  border-radius: 10px; padding: 10px 16px; margin-bottom: 26px;
+  font-size: 13px; color: var(--danger); font-weight: 600;
+}
+.deficit-bar svg { width: 16px; height: 16px; flex-shrink: 0; }
+.form-field { margin-bottom: 15px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 7px; }
+.form-input {
+  width: 100%; border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 14px 16px; font-family: 'Manrope', sans-serif; font-size: 15px;
+  color: var(--text); background: var(--cream); transition: border-color 0.2s; outline: none;
+}
+.form-input:focus { border-color: var(--teal); background: #fff; }
+.form-input.error { border-color: var(--danger); }
+.btn-submit {
+  width: 100%; background: var(--teal); border: none; border-radius: 14px;
+  padding: 18px; font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 700;
+  color: #fff; cursor: pointer; margin-top: 8px; transition: all 0.2s;
+}
+.btn-submit:hover { background: var(--teal-dark); transform: translateY(-1px); }
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.form-privacy { font-size: 12px; color: var(--muted); text-align: center; margin-top: 14px; }
+.form-social{margin-top:24px;text-align:center}.form-social-title{font-size:13px;color:var(--muted);margin-bottom:11px}.social-links{display:grid;grid-template-columns:1fr 1fr;gap:10px}.social-link{display:flex;align-items:center;justify-content:center;min-height:42px;padding:10px 12px;border:1px solid var(--border);border-radius:11px;background:var(--white);color:var(--text);text-decoration:none;font-size:13px;font-weight:700;transition:all .2s}.social-link:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-light)}
+
+/* ===== THANKS ===== */
+.thanks-outer { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
+.thanks-card {
+  background: var(--white); border-radius: 22px; padding: 52px 44px;
+  max-width: 520px; width: 100%; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border);
+}
+.thanks-icon {
+  width: 70px; height: 70px; background: var(--teal-light); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 26px; color: var(--teal);
+}
+.thanks-icon svg { width: 36px; height: 36px; }
+.thanks-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 600; margin-bottom: 12px; }
+.thanks-sub { font-size: 16px; color: var(--muted); margin-bottom: 34px; line-height: 1.6; }
+.steps-list { text-align: left; display: flex; flex-direction: column; gap: 18px; }
+.step-item { display: flex; align-items: flex-start; gap: 14px; }
+.step-num {
+  width: 34px; height: 34px; background: var(--teal); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; color: #fff;
+  font-size: 14px; font-weight: 700; flex-shrink: 0;
+}
+.step-text strong { display: block; font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.step-text span { font-size: 13.5px; color: var(--muted); }
+
+@media (max-width: 960px) {
+  .hero-wrap { grid-template-columns: 1fr; gap: 36px; padding-top: 40px; }
+  .photo-card { max-width: 380px; width:100%; margin:0 auto; }
+  .options-grid { grid-template-columns: 1fr; }
+  .form-card, .thanks-card { padding: 32px 24px; }
+  .facts { gap: 24px; }
+  .map-frame { padding: 16px; }
+  .lang-bar { position:relative; }
+}
+@media (max-width:560px){ .hero-wrap{padding:28px 16px 48px}.form-outer,.thanks-outer{padding:24px 16px}.form-card,.thanks-card{padding:28px 20px} }
+</style>
+  <meta property="og:image" content="https://bolt.new/static/og_default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
+<!-- MOBILE_LAYOUT_FIX_START -->
+<style id="mobile-layout-fix">
+/* Keep the hero content and CTA in normal document flow. */
+.hero-wrap, .hero-left, .photo-card { position: relative; }
+.hero-left { z-index: 2; min-width: 0; }
+.photo-card { z-index: 1; }
+
+@media (max-width: 960px) {
+  .hero-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 28px !important;
+    padding: 32px 18px 56px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .hero-left {
+    order: 1 !important;
+    width: 100% !important;
+    max-width: 680px !important;
+    margin: 0 auto !important;
+  }
+  .photo-card {
+    order: 2 !important;
+    width: min(100%, 390px) !important;
+    max-width: 390px !important;
+    margin: 0 auto !important;
+    flex: 0 0 auto !important;
+    transform: none !important;
+  }
+  .btn-primary {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 0 30px !important;
+    position: relative !important;
+    z-index: 5 !important;
+  }
+  .facts { position: relative !important; z-index: 2 !important; }
+  .value-promise { max-width: none !important; }
+}
+
+@media (max-width: 560px) {
+  .lang-bar {
+    position: relative !important;
+    top: auto !important;
+  }
+  .hero-wrap {
+    padding: 24px 16px 44px !important;
+    gap: 24px !important;
+  }
+  .hero-title { font-size: clamp(30px, 9vw, 42px) !important; }
+  .hero-sub { font-size: 16px !important; }
+  .value-promise { padding: 20px !important; margin-bottom: 24px !important; }
+  .photo-card { width: min(100%, 360px) !important; }
+  .photo-ph { aspect-ratio: 4 / 5 !important; }
+  .photo-foot { padding: 18px 20px !important; }
+  .facts { gap: 20px !important; }
+}
+
+/* Result map must never overlap the surrounding content. */
+.result-wrap, .map-frame, .map-svg-wrap, #mapSvg, .map-cta-hint {
+  position: relative !important;
+}
+.map-frame { overflow: hidden !important; }
+.map-svg-wrap { width: 100% !important; overflow: hidden !important; }
+#mapSvg { display: block !important; width: 100% !important; height: auto !important; max-width: 100% !important; }
+.map-cta-hint { z-index: 3 !important; }
+</style>
+<!-- MOBILE_LAYOUT_FIX_END -->
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div id="screen-hero" class="screen active">
+  <div class="lang-bar">
+    <div class="brand-mark">Антон Ряхін</div>
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="uk" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button>
+    </div>
+  </div>
+  <div class="hero-wrap">
+    <div class="hero-left">
+      <div class="eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span data-t="eyebrow"></span>
+      </div>
+      <h1 class="hero-title" data-t="heroTitle"></h1>
+      <p class="hero-sub" data-t="heroSub"></p>
+      <div class="value-promise">
+        <div class="value-promise-head" data-t="valueHead"></div>
+        <div class="value-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span data-t="value1"></span>
+        </div>
+        <div class="value-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span data-t="value2"></span>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="goTo('quiz')">
+        <span data-t="heroBtn"></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <div class="facts">
+        <div class="fact-item"><div class="fact-num">400+</div><div class="fact-label" data-t="fact1"></div></div>
+        <div class="fact-item"><div class="fact-num">30</div><div class="fact-label" data-t="fact2"></div></div>
+        <div class="fact-item"><div class="fact-num">100%</div><div class="fact-label" data-t="fact3"></div></div>
+      </div>
+    </div>
+    <div class="photo-card">
+      <div class="photo-ph">
+        <img src="map-hero.png" alt="Антон Ряхін">
+      </div>
+      <div class="photo-foot">
+        <strong>Антон Ряхін</strong>
+        <span data-t="photoRole"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div id="screen-quiz" class="screen">
+  <div class="lang-bar">
+    <div class="brand-mark">Антон Ряхін</div>
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="uk" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button>
+    </div>
+  </div>
+  <div class="quiz-wrap">
+    <div class="quiz-top">
+      <div class="quiz-step-label" id="qLabel"></div>
+      <div class="quiz-mini-map-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+        <span data-t="mapBuilding"></span>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="quiz-gift-bar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+      <span data-t="quizGiftBar"></span>
+    </div>
+    <h2 class="q-title" id="questionTitle"></h2>
+    <div class="options-grid" id="optionsGrid"></div>
+    <div class="quiz-nav">
+      <button class="btn-back" id="btnBack" onclick="prevQ()"><span data-t="btnBack"></span></button>
+      <button class="btn-next" id="btnNext" onclick="nextQ()" disabled><span data-t="btnNext"></span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LOADER ===== -->
+<div id="screen-loader" class="screen" style="align-items:center;justify-content:center;background:var(--white);">
+  <div style="text-align:center;max-width:380px;padding:40px 24px;">
+    <div style="width:72px;height:72px;border:4px solid var(--teal-light);border-top-color:var(--teal);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 32px;"></div>
+    <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:600;margin-bottom:20px;" data-t="loaderTitle"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="loader-step" id="ls1"><span data-t="ls1"></span></div>
+      <div class="loader-step" id="ls2"><span data-t="ls2"></span></div>
+      <div class="loader-step" id="ls3"><span data-t="ls3"></span></div>
+    </div>
+  </div>
+</div>
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-step { padding: 12px 16px; border-radius: 10px; background: var(--cream); font-size: 14px; color: var(--muted); transition: all 0.4s; }
+.loader-step.done { background: var(--teal-light); color: var(--teal-dark); font-weight: 600; }
+</style>
+
+<!-- ===== RESULT ===== -->
+<div id="screen-result" class="screen">
+  <div class="lang-bar">
+    <div class="brand-mark">Антон Ряхін</div>
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="uk" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button>
+    </div>
+  </div>
+  <div class="result-wrap">
+    <div class="result-head">
+      <div class="result-icon-state" id="resultStateIcon"></div>
+      <h2 class="result-title" data-t="resultTitle"></h2>
+    </div>
+
+    <div class="map-frame">
+      <div class="map-svg-wrap">
+        <svg id="mapSvg" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <button class="map-cta-hint" id="mapCtaHint" onclick="revealWall()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
+        <span data-t="mapCtaHint"></span>
+      </button>
+    </div>
+
+    <div class="insight-blocks" id="insightBlocks">
+      <div class="insight-block" id="ib1">
+        <div class="insight-block-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          <span data-t="ib1label"></span>
+        </div>
+        <p data-t="ib1p1"></p>
+        <p data-t="ib1p2"></p>
+      </div>
+      <div class="insight-block" id="ib2">
+        <div class="insight-block-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+          <span data-t="ib2label"></span>
+        </div>
+        <p data-t="ib2p1"></p>
+        <p data-t="ib2p2"></p>
+      </div>
+      <div class="insight-block" id="ib3">
+        <div class="insight-block-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span data-t="ib3label"></span>
+        </div>
+        <p data-t="ib3p1"></p>
+        <p data-t="ib3p2"></p>
+        <div class="insight-accent" id="insightAccent">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span id="accentText"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-form-trigger" id="resultFormTrigger">
+      <button class="btn-primary" style="margin-bottom:0;" onclick="goTo('form')">
+        <span data-t="toFormBtn"></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FORM ===== -->
+<div id="screen-form" class="screen">
+  <div class="lang-bar">
+    <div class="brand-mark">Антон Ряхін</div>
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="uk" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button>
+    </div>
+  </div>
+  <div class="form-outer">
+    <div class="form-card">
+      <div class="form-eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <span data-t="formEyebrow"></span>
+      </div>
+      <h2 class="form-title" data-t="formTitle"></h2>
+      <div class="form-gift">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+        <span data-t="formGift"></span>
+      </div>
+      <div class="deficit-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span data-t="deficit"></span>
+      </div>
+      <div class="form-field">
+        <label class="form-label" data-t="labelName"></label>
+        <input class="form-input" id="inputName" type="text" data-ph="phName">
+      </div>
+      <div class="form-field">
+        <label class="form-label" data-t="labelContact"></label>
+       <input class="form-input" id="inputContact" type="tel" autocomplete="tel" data-ph="phContact" maxlength="21">
+      </div>
+      <button class="btn-submit" id="btnSubmit" onclick="submitForm()"><span data-t="btnSubmit"></span></button>
+      <div class="form-social"><div class="form-social-title" data-t="socialTitle"></div><div class="social-links">
+        <a class="social-link" href="https://ig.me/m/anton_riakhin_psy" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a class="social-link" href="https://t.me/riakhin_anton" target="_blank" rel="noopener noreferrer">Telegram</a>
+      </div></div>
+      <p class="form-privacy" data-t="privacy"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== THANKS ===== -->
+<div id="screen-thanks" class="screen">
+  <div class="thanks-outer">
+    <div class="thanks-card">
+      <div class="thanks-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <h2 class="thanks-title" id="thanksTitle"></h2>
+      <p class="thanks-sub" data-t="thanksSub"></p>
+      <div class="steps-list">
+        <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong data-t="step1t"></strong><span data-t="step1s"></span></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong data-t="step2t"></strong><span data-t="step2s"></span></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong data-t="step3t"></strong><span data-t="step3s"></span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ ICONS (Lucide-style inline SVG) ============
+const ICON = {
+  flame: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+  compass: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>',
+  zap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  tornado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H3M18 8H6M19 12H9M16 16h-6M11 20H9"/></svg>',
+  briefcase: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>',
+  signpost: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 21v-3M18 6H5l-2 3 2 3h13M6 12v6M6 18h12l2-3-2-3"/></svg>',
+  mountain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>',
+  calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  repeat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>',
+  infinity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"/></svg>',
+  helpCircle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  shieldAlert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4M12 16h.01"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  batteryLow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/><line x1="5" y1="10" x2="5" y2="14"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+  lotus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-2 2.5-2 6 0 8 2-2 2-5.5 0-8zM4 8c0 3 2 5.5 5 6.5C8 12 6 9.5 4 8zM20 8c-2 1.5-4 4-5 6.5 3-1 5-3.5 5-6.5zM3 14c2 3 5 5 9 5s7-2 9-5c-3 1-6 1.5-9 1.5S6 15 3 14z"/></svg>',
+  messageCircle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>',
+  flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>',
+  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>',
+  gauge: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>',
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>'
+};
+
+// ============ TRANSLATIONS ============
+const T = {
+  uk: {
+    eyebrow: "Експрес-тест за 2 хвилини",
+    heroTitle: "Побудуйте <em>карту</em> виходу зі свого тупика",
+    heroSub: "Пройдіть короткий тест — і побачите, де ваш маршрут упирається в стіну і яка звичка привела вас туди.",
+    valueHead: "Що ви отримаєте",
+    value1: "<b>Особисту карту</b> вашого тупика — одразу після тесту",
+    value2: "<b>Безкоштовну зустріч 30 хв</b> — розбір вашої ситуації",
+    heroBtn: "Побудувати мою карту",
+    fact1: "годин практики",
+    fact2: "хвилин перша зустріч безкоштовно",
+    fact3: "конфіденційність",
+    photoHint: "Фото",
+    photoRole: "Картограф ваших звичок і сценаріїв. Допомагаю знайти вихід із повторюваного життєвого глухого кута та кризи",
+    mapBuilding: "Карта будується",
+    quizGiftBar: "Наприкінці — карта виходу + безкоштовна зустріч 30 хв",
+    btnBack: "← Назад",
+    btnNext: "Далі →",
+    loaderTitle: "Будуємо вашу карту",
+    ls1: "Аналізуємо ваші відповіді...",
+    ls2: "Прокладаємо ваш маршрут...",
+    ls3: "Знаходимо, де тупик...",
+    resultTitle: "Ось ваша карта. І ось де тупик.",
+    mapCtaHint: "Натисни тут, щоб побачити нову дорогу",
+    ib1label: "По-старому не працює",
+    ib1p1: "Будь-яка криза - це момент, коли старою дорогою вже не виходить їхати. По-старому не працює, а по-новому поки незрозуміло як. Можливо, змінилася сама дорога, можливо, точка призначення, а може, тобі просто більше не підходить колишній маршрут.",
+    ib1p2: "Колись звичні способи справлятися справді допомагали: не показувати емоції та ігнорувати бажання, промовчати, потерпіти або зробити все самому. Але те, що раніше допомагало рухатися далі, з часом може почати працювати проти тебе. Тепер це може призводити до виснаження, закритості, втрати близькості, постійної критики себе та інших, накопичення напруги або відчуття, що ти знову і знову опиняєшся в одній і тій самій точці.",
+    ib2label: "Карта, яка рятувала",
+    ib2p1: "У тупик тебе привела карта, яка довгий час служила тобі й допомагала уникати небезпек. Багато її позначок з’явилися ще в дитинстві, там, де було важливо не отримати покарання, не розчарувати інших і зберегти близькість та безпеку. Тому на ній з’явилися знаки: «не показуй емоції», «не проси», «не кажи \"ні\"», «не сперечайся», «справляйся сам». І ти звично об’їжджаєш ці місця, позначені на карті, навіть коли небезпеки там уже давно немає і ти цього не перевіряєш.",
+    ib2p2: "Колись ці знаки й правила тобі допомогли. Але зараз вони вже не несуть тієї важливості й небезпеки, яка була колись. Те, що раніше вимагало обережності, тепер можна проїхати спокійно й відкрити для себе те, що раніше було недоступним. Не оновивши карту й не почавши наносити на неї власні нотатки та коментарі про те, що тобі подобається і як тобі хочеться нею рухатися, ти можеш змінювати партнерів, роботу, міста й обставини та знову приїжджати в схожу точку. І здається, що винні люди або обставини. А ти просто продовжуєш їхати за старою картою. Яка різниця, як швидко ти їдеш, якщо їдеш не туди?",
+    ib3label: "30-хвилинний розбір",
+    ib3p1: "За ознайомчу зустріч 30 хвилин я допоможу тобі побачити звичний маршрут і знаки, через які ти знову звертаєш не туди.",
+    ib3p2: "Разом подивимося, які позначки на твоїй старій карті досі керують вибором і що ти звик не помічати. А головне, куди ти хочеш прийти зараз. Можливо, довгий час ти дивився лише в дзеркало заднього виду, у своє минуле, від якого тікав і яким не хотів бути, і майже не дивився вперед. Якщо після зустрічі ти відчуєш, що хочеш продовжити, ми зможемо поступово оновлювати маршрут і помічати моменти, коли за звичкою хочеться звернути на стару дорогу.",
+    toFormBtn: "Почати оновлення маршруту",
+    formEyebrow: "Карта побудована",
+    formTitle: "Куди надіслати вашу карту і забронювати безкоштовну зустріч?",
+    formGift: "Безкоштовна зустріч 30 хв — розберемо вашу карту особисто",
+    deficit: "Залишилось 3 вільних вікна на цьому тижні",
+    labelName: "Ваше ім'я",
+    labelContact: "Телефон або Telegram",
+    phName: "Як вас звати?",
+    phContact: "+ номер телефону або @username",
+    btnSubmit: "Записатись на розбір →",
+    socialTitle: "Або можете написати мені напряму",
+    privacy: "Ваші дані в безпеці — конфіденційність гарантована",
+    thanksSub: "Дякую за довіру. Ось що відбудеться далі:",
+    step1t: "Напишу вам у месенджер",
+    step1s: "Протягом кількох годин зв'яжусь особисто",
+    step2t: "Узгодимо час",
+    step2s: "Виберемо зручний час для зустрічі",
+    step3t: "Дзвінок на 30 хвилин",
+    step3s: "Розберемо вашу карту і знайдемо перший крок",
+    qLabel: (c, t) => `Крок ${c} із ${t}`,
+    accents: [
+      "Підете зі зустрічі з зрозумілим першим кроком.",
+      "Без осуду і тиску. Тільки те, що ви готові побачити.",
+      "Перший зсув відчуєте вже на цій зустрічі.",
+      "Знайдемо причину, а не ганятимемось за симптомами."
+    ],
+    wallLabel: "ТУПИК",
+    habitLabel: "Тут ви звернули. За звичкою.",
+    newRoute: "Новий маршрут",
+    questions: [
+      { q: "Що найчастіше відчуваєте зараз?", multi: false, opts: [
+        { icon: "flame", t: "Втома без причини", s: "Роблю все, але сил не лишається" },
+        { icon: "compass", t: "Внутрішня порожнеча", s: "Не знаю, чого хочу насправді" },
+        { icon: "zap", t: "Тривога і напруга", s: "Щось не так, але не можу назвати що" },
+        { icon: "tornado", t: "Роздратування і злість", s: "На себе, на близьких, на ситуацію" }
+      ]},
+      { q: "Яка тема зараз найболючіша?", multi: false, opts: [
+        { icon: "briefcase", t: "Кар'єра і реалізація", s: "Не те роблю або застряг на місці" },
+        { icon: "heart", t: "Стосунки і близькість", s: "Конфлікти, відстань або самотність" },
+        { icon: "signpost", t: "Сенс і напрямок", s: "Не розумію, куди рухатись далі" },
+        { icon: "mountain", t: "Енергія і здоров'я", s: "Вигорання, тіло сигналізує" }
+      ]},
+      { q: "Як довго ви це відчуваєте?", multi: false, opts: [
+        { icon: "calendar", t: "Кілька тижнів", s: "Нещодавно все загострилось" },
+        { icon: "calendar", t: "Кілька місяців", s: "Поступово накопичувалось" },
+        { icon: "repeat", t: "Більше року", s: "Вже давно, звик жити з цим" },
+        { icon: "infinity", t: "Завжди так", s: "Не пам'ятаю себе іншим" }
+      ]},
+      { q: "Що найбільше стримує вас від змін?", multi: false, opts: [
+        { icon: "helpCircle", t: "Не знаю з чого почати", s: "Хочу, але немає ясності" },
+        { icon: "shieldAlert", t: "Страх зробити гірше", s: "А раптом не вийде?" },
+        { icon: "users", t: "Думка інших", s: "Що скажуть близькі або оточення" },
+        { icon: "batteryLow", t: "Немає часу і сил", s: "Всі ресурси йдуть на виживання" }
+      ]},
+      { q: "Ви вже пробували щось змінити?", multi: false, opts: [
+        { icon: "book", t: "Читав книги, дивився відео", s: "Знань багато, але не застосовується" },
+        { icon: "lotus", t: "Медитація, практики", s: "Допомагає, але не вирішує суть" },
+        { icon: "messageCircle", t: "Звертався до спеціаліста", s: "Був досвід, шукаю свого фахівця" },
+        { icon: "flag", t: "Нічого не пробував", s: "Це мій перший крок" }
+      ]},
+      { q: "Що для вас найважливіше у роботі зі спеціалістом? (можна кілька)", multi: true, opts: [
+        { icon: "target", t: "Конкретний результат", s: "Чіткий план і зрозумілі кроки" },
+        { icon: "shield", t: "Безпека і прийняття", s: "Без осуду і тиску" },
+        { icon: "gauge", t: "Швидкий ефект", s: "Відчути зміни вже після першої зустрічі" },
+        { icon: "search", t: "Розуміння себе", s: "Знайти причини, а не лише симптоми" }
+      ]}
+    ]
+  },
+  ru: {
+    eyebrow: "Экспресс-тест за 2 минуты",
+    heroTitle: "Постройте <em>карту</em> выхода из своего тупика",
+    heroSub: "Пройдите короткий тест — и увидите, где ваш маршрут упирается в стену и какая привычка привела вас туда.",
+    valueHead: "Что вы получите",
+    value1: "<b>Личную карту</b> вашего тупика — сразу после теста",
+    value2: "<b>Бесплатную встречу 30 мин</b> — разбор вашей ситуации",
+    heroBtn: "Построить мою карту",
+    fact1: "часов практики",
+    fact2: "минут первая встреча бесплатно",
+    fact3: "конфиденциальность",
+    photoHint: "Фото",
+    photoRole: "Картограф ваших привычек и сценариев. Помогаю найти выход из повторяющегося жизненного тупика и кризиса",
+    mapBuilding: "Карта строится",
+    quizGiftBar: "В конце — карта выхода + бесплатная встреча 30 мин",
+    btnBack: "← Назад",
+    btnNext: "Далее →",
+    loaderTitle: "Строим вашу карту",
+    ls1: "Анализируем ваши ответы...",
+    ls2: "Прокладываем ваш маршрут...",
+    ls3: "Находим, где тупик...",
+    resultTitle: "Вот ваша карта. И вот где тупик.",
+    mapCtaHint: "Нажми здесь, чтобы увидеть новую дорогу",
+    ib1label: "По-старому не работает",
+    ib1p1: "Любой кризис - это момент, когда по старой дороге уже не получается ехать. По-старому не работает, а по-новому пока непонятно как. Возможно, изменилась сама дорога, возможно, точка назначения, а может быть, тебе просто больше не подходит прежний маршрут.",
+    ib1p2: "Когда-то привычные способы справляться действительно помогали: не показывать эмоции и игнорировать желания, промолчать, потерпеть или сделать всё самому. Но то, что раньше помогало двигаться дальше, со временем может начать работать против тебя. Теперь это может приводить к истощению, закрытости, потере близости, постоянной критике себя и других, накоплению напряжения или ощущению, что ты снова и снова оказываешься в одной и той же точке.",
+    ib2label: "Карта, которая спасала",
+    ib2p1: "В тупик тебя привела карта, которая долгое время служила тебе и помогала избегать опасностей. Многие её отметки появились ещё в детстве, там, где было важно не получить наказание, не разочаровать других и сохранить близость и безопасность. Поэтому на ней появились знаки: «не показывай эмоции», «не проси», «не говори \"нет\"», «не спорь», «справляйся сам». И ты привычно объезжаешь эти места, отмеченные на карте, даже когда опасности там давно уже нет и ты не проверяешь этого.",
+    ib2p2: "Когда-то эти знаки и правила тебе помогли. Но сейчас они уже не несут той важности и опасности, которая была когда-то. То, что раньше требовало осторожности, теперь можно проехать спокойно и открыть для себя то, что раньше было недоступно. Не обновив карту и не начав рисовать на ней свои заметки и комментарии о том, что тебе нравится и как тебе хочется по ней двигаться, ты можешь менять партнёров, работу, города и обстоятельства и снова приезжать в похожую точку. И кажется, что виноваты люди или обстоятельства. А ты просто продолжаешь ехать по старой карте. Какая разница, как быстро ты едешь, если едешь не туда?",
+    ib3label: "30-минутный разбор",
+    ib3p1: "За ознакомительную встречу 30 минут я помогу тебе увидеть привычный маршрут и знаки, из-за которых ты снова сворачиваешь не туда.",
+    ib3p2: "Вместе посмотрим, какие отметки на твоей старой карте всё ещё управляют выбором и что ты привык не замечать. А главное, куда ты хочешь прийти сейчас. Возможно, долгое время ты смотрел только в зеркало заднего вида, в своё прошлое, от которого бежал и каким не хотел быть, и почти не смотрел вперёд. Если после встречи ты почувствуешь, что хочешь продолжить, мы сможем постепенно обновлять маршрут и замечать моменты, когда по привычке хочется свернуть на старую дорогу.",
+    toFormBtn: "Начать обновление маршрута",
+    formEyebrow: "Карта построена",
+    formTitle: "Куда отправить вашу карту и забронировать бесплатную встречу?",
+    formGift: "Бесплатная встреча 30 мин — разберём вашу карту лично",
+    deficit: "Осталось 3 свободных окна на этой неделе",
+    labelName: "Ваше имя",
+    labelContact: "Телефон или Telegram",
+    phName: "Как вас зовут?",
+    phContact: "+ номер телефона или @username",
+    btnSubmit: "Записаться на разбор →",
+    socialTitle: "Или можете написать мне напрямую",
+    privacy: "Ваши данные в безопасности — конфиденциальность гарантирована",
+    thanksSub: "Спасибо за доверие. Вот что произойдёт дальше:",
+    step1t: "Напишу вам в мессенджер",
+    step1s: "В течение нескольких часов свяжусь лично",
+    step2t: "Согласуем время",
+    step2s: "Выберем удобное время для встречи",
+    step3t: "Звонок на 30 минут",
+    step3s: "Разберём вашу карту и найдём первый шаг",
+    qLabel: (c, t) => `Шаг ${c} из ${t}`,
+    accents: [
+      "Уйдёте со встречи с понятным первым шагом.",
+      "Без осуждения и давления. Только то, что вы готовы увидеть.",
+      "Первый сдвиг почувствуете уже на этой встрече.",
+      "Найдём причину, а не будем гоняться за симптомами."
+    ],
+    wallLabel: "ТУПИК",
+    habitLabel: "Здесь вы свернули. По привычке.",
+    newRoute: "Новый маршрут",
+    questions: [
+      { q: "Что чаще всего чувствуете сейчас?", multi: false, opts: [
+        { icon: "flame", t: "Усталость без причины", s: "Делаю всё, но сил не остаётся" },
+        { icon: "compass", t: "Внутренняя пустота", s: "Не знаю, чего хочу на самом деле" },
+        { icon: "zap", t: "Тревога и напряжение", s: "Что-то не так, но не могу назвать что" },
+        { icon: "tornado", t: "Раздражение и злость", s: "На себя, на близких, на ситуацию" }
+      ]},
+      { q: "Какая тема сейчас самая болезненная?", multi: false, opts: [
+        { icon: "briefcase", t: "Карьера и реализация", s: "Не то делаю или застрял на месте" },
+        { icon: "heart", t: "Отношения и близость", s: "Конфликты, дистанция или одиночество" },
+        { icon: "signpost", t: "Смысл и направление", s: "Не понимаю, куда двигаться дальше" },
+        { icon: "mountain", t: "Энергия и здоровье", s: "Выгорание, тело сигнализирует" }
+      ]},
+      { q: "Как давно вы это чувствуете?", multi: false, opts: [
+        { icon: "calendar", t: "Несколько недель", s: "Недавно всё обострилось" },
+        { icon: "calendar", t: "Несколько месяцев", s: "Постепенно накапливалось" },
+        { icon: "repeat", t: "Больше года", s: "Давно, привык с этим жить" },
+        { icon: "infinity", t: "Всегда так", s: "Не помню себя другим" }
+      ]},
+      { q: "Что больше всего удерживает вас от изменений?", multi: false, opts: [
+        { icon: "helpCircle", t: "Не знаю с чего начать", s: "Хочу, но нет ясности" },
+        { icon: "shieldAlert", t: "Страх сделать хуже", s: "А вдруг не получится?" },
+        { icon: "users", t: "Мнение других", s: "Что скажут близкие или окружение" },
+        { icon: "batteryLow", t: "Нет времени и сил", s: "Все ресурсы идут на выживание" }
+      ]},
+      { q: "Вы уже пробовали что-то менять?", multi: false, opts: [
+        { icon: "book", t: "Читал книги, смотрел видео", s: "Знаний много, но не применяется" },
+        { icon: "lotus", t: "Медитация, практики", s: "Помогает, но не решает суть" },
+        { icon: "messageCircle", t: "Обращался к специалисту", s: "Был опыт, ищу своего человека" },
+        { icon: "flag", t: "Ничего не пробовал", s: "Это мой первый шаг" }
+      ]},
+      { q: "Что для вас важнее всего в работе со специалистом? (можно несколько)", multi: true, opts: [
+        { icon: "target", t: "Конкретный результат", s: "Чёткий план и понятные шаги" },
+        { icon: "shield", t: "Безопасность и принятие", s: "Без осуждения и давления" },
+        { icon: "gauge", t: "Быстрый эффект", s: "Почувствовать изменения уже после первой встречи" },
+        { icon: "search", t: "Понимание себя", s: "Найти причины, а не только симптомы" }
+      ]}
+    ]
+  }
+};
+
+// State icons for the map (index of Q1 answer -> icon key)
+const STATE_ICONS = ['flame', 'compass', 'zap', 'tornado'];
+
+// ============ STATE ============
+let lang = 'uk';
+let currentQ = 0;
+let answers = [];       // stored answer text per question
+let answerIdx = [];     // stored answer index per question (for map)
+let selectedOpts = [];
+let userName = '';
+let wallRevealed = false;
+
+// ============ LANG ============
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+  document.documentElement.lang = l;
+  renderTexts();
+  if (isActive('quiz')) renderQuestion();
+  if (isActive('result')) renderResultTexts();
+}
+
+function isActive(name) { return document.getElementById('screen-' + name).classList.contains('active'); }
+
+function renderTexts() {
+  const t = T[lang];
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const v = t[el.dataset.t];
+    if (typeof v === 'string') el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-ph]').forEach(el => {
+    const v = t[el.dataset.ph];
+    if (v) el.placeholder = v;
+  });
+}
+
+// ============ NAV ============
+function goTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screen).classList.add('active');
+  window.scrollTo(0, 0);
+  if (screen === 'quiz') { renderQuestion(); }
+  if (screen === 'loader') runLoader();
+  if (screen === 'result') showResult();
+}
+
+// ============ QUIZ ============
+function renderQuestion() {
+  const t = T[lang];
+  const qs = t.questions;
+  const q = qs[currentQ];
+  selectedOpts = Array.isArray(answerIdx[currentQ]) ? answerIdx[currentQ].slice() : [];
+
+  document.getElementById('qLabel').textContent = t.qLabel(currentQ + 1, qs.length);
+  document.getElementById('progressFill').style.width = (((currentQ + 1) / qs.length) * 100) + '%';
+  document.getElementById('questionTitle').textContent = q.q;
+  document.getElementById('btnBack').style.display = 'block';
+
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const card = document.createElement('div');
+    card.className = 'option-card';
+    card.innerHTML = `<div class="opt-icon">${ICON[o.icon]}</div><div class="opt-title">${o.t}</div><div class="opt-sub">${o.s}</div>`;
+    if (selectedOpts.includes(i)) card.classList.add('selected');
+    card.onclick = () => selectOpt(card, i, q.multi);
+    grid.appendChild(card);
+  });
+
+  const btnNext = document.getElementById('btnNext');
+  btnNext.style.display = q.multi ? 'block' : 'none';
+  btnNext.disabled = true;
+}
+
+function selectOpt(card, idx, multi) {
+  const cards = document.querySelectorAll('.option-card');
+  if (multi) {
+    card.classList.toggle('selected');
+    selectedOpts = Array.from(cards).map((c, i) => c.classList.contains('selected') ? i : -1).filter(i => i >= 0);
+    document.getElementById('btnNext').disabled = selectedOpts.length === 0;
+  } else {
+    cards.forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedOpts = [idx];
+    setTimeout(nextQ, 320);
+  }
+}
+
+function nextQ() {
+  const t = T[lang];
+  answers[currentQ] = selectedOpts.map(i => t.questions[currentQ].opts[i].t).join(', ');
+  answerIdx[currentQ] = selectedOpts.slice();
+  currentQ++;
+  if (currentQ >= t.questions.length) goTo('loader');
+  else renderQuestion();
+}
+
+function prevQ() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+  else goTo('hero');
+}
+
+// ============ LOADER ============
+function runLoader() {
+  const steps = ['ls1', 'ls2', 'ls3'];
+  steps.forEach(id => document.getElementById(id).classList.remove('done'));
+  let i = 0;
+  const iv = setInterval(() => {
+    if (i < steps.length) { document.getElementById(steps[i]).classList.add('done'); i++; }
+    else { clearInterval(iv); setTimeout(() => goTo('result'), 400); }
+  }, 750);
+}
+
+// ============ RESULT + MAP ============
+function renderResultTexts() {
+  renderTexts();
+  // state icon
+  const stateKey = STATE_ICONS[(answerIdx[0] && answerIdx[0][0]) || 0];
+  document.getElementById('resultStateIcon').innerHTML = ICON[stateKey];
+  // accent from Q6 (first selected)
+  const t = T[lang];
+  const q6 = answerIdx[5] || [0];
+  document.getElementById('accentText').textContent = t.accents[q6[0]] || t.accents[0];
+}
+
+function showResult() {
+  wallRevealed = false;
+  renderResultTexts();
+  buildMap();
+  // reset insight blocks
+  ['ib1','ib2','ib3'].forEach(id => document.getElementById(id).classList.remove('show'));
+  document.getElementById('resultFormTrigger').classList.remove('show');
+  document.getElementById('mapCtaHint').classList.remove('hidden');
+  // animate road draw
+  setTimeout(animateRoad, 300);
+}
+
+// Build the SVG map based on answers
+function buildMap() {
+  const svg = document.getElementById('mapSvg');
+  const stateKey = STATE_ICONS[(answerIdx[0] && answerIdx[0][0]) || 0];
+  const q1 = (answerIdx[0] && answerIdx[0][0]) || 0;
+
+  // atmosphere colours by state
+  const stateColors = ['#BE7B4E', '#5B8A9E', '#C0563E', '#8E6BA8'];
+  const atmo = stateColors[q1];
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="roadGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#C9C2B6"/>
+        <stop offset="100%" stop-color="#A8A093"/>
+      </linearGradient>
+      <linearGradient id="newRoad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#2E6E6B"/>
+        <stop offset="100%" stop-color="#4FA39F"/>
+      </linearGradient>
+      <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+      </filter>
+    </defs>
+
+    <!-- background subtle -->
+    <rect x="0" y="0" width="700" height="300" fill="#FBFAF7"/>
+
+    <!-- old road path -->
+    <path id="oldRoad" d="M 20 220 Q 150 220 200 200 T 360 190 Q 460 185 520 160"
+      fill="none" stroke="url(#roadGrad)" stroke-width="26" stroke-linecap="round"
+      stroke-dasharray="1400" stroke-dashoffset="1400"/>
+    <path id="oldRoadDash" d="M 20 220 Q 150 220 200 200 T 360 190 Q 460 185 520 160"
+      fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="8 12" opacity="0.6"/>
+
+    <!-- new road (hidden until reveal) -->
+    <path id="newRoadPath" d="M 360 190 Q 420 250 520 250 T 680 210"
+      fill="none" stroke="url(#newRoad)" stroke-width="22" stroke-linecap="round"
+      stroke-dasharray="600" stroke-dashoffset="600" opacity="0"/>
+
+    <!-- WALL / tupik -->
+    <g id="wallGroup" opacity="0">
+      <rect id="wallRect" x="524" y="120" width="30" height="80" rx="4" fill="#8A8175"/>
+      <rect x="524" y="120" width="30" height="20" fill="#78705F"/>
+      <rect x="524" y="145" width="30" height="20" fill="#847B6B"/>
+      <rect x="524" y="170" width="30" height="20" fill="#78705F"/>
+      <g id="wallLabel">
+        <rect x="500" y="92" width="78" height="24" rx="12" fill="#C0563E"/>
+        <text x="539" y="108" text-anchor="middle" fill="#fff" font-family="Manrope,sans-serif" font-size="12" font-weight="700" id="wallLabelText">ТУПИК</text>
+      </g>
+    </g>
+
+    <!-- habit fork marker (hidden) -->
+    <g id="habitMarker" opacity="0">
+      <circle cx="360" cy="190" r="9" fill="#BE7B4E"/>
+      <circle cx="360" cy="190" r="9" fill="none" stroke="#BE7B4E" stroke-width="2">
+        <animate attributeName="r" from="9" to="18" dur="1.4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" from="0.6" to="0" dur="1.4s" repeatCount="indefinite"/>
+      </circle>
+      <g id="habitLabelBox" opacity="0">
+        <rect x="250" y="230" width="220" height="30" rx="8" fill="#BE7B4E"/>
+        <text x="360" y="250" text-anchor="middle" fill="#fff" font-family="Manrope,sans-serif" font-size="11.5" font-weight="600" id="habitLabelText"></text>
+      </g>
+    </g>
+
+    <!-- new route flag (hidden) -->
+    <g id="flagGroup" opacity="0">
+      <line x1="660" y1="150" x2="660" y2="185" stroke="#2E6E6B" stroke-width="2.5"/>
+      <path d="M 660 152 L 682 159 L 660 166 Z" fill="#2E6E6B"/>
+      <text x="655" y="140" text-anchor="middle" fill="#2E6E6B" font-family="Manrope,sans-serif" font-size="10" font-weight="700" id="newRouteText"></text>
+    </g>
+
+    <!-- CAR -->
+    <g id="carGroup" opacity="0" transform="translate(20,220)">
+      <g transform="translate(-16,-13)">
+        <rect x="2" y="10" width="28" height="12" rx="4" fill="${atmo}"/>
+        <rect x="7" y="3" width="16" height="10" rx="3" fill="${atmo}"/>
+        <rect x="9" y="5" width="5" height="5" rx="1" fill="#fff" opacity="0.85"/>
+        <rect x="16" y="5" width="5" height="5" rx="1" fill="#fff" opacity="0.85"/>
+        <circle cx="9" cy="23" r="4" fill="#2B2B2B"/>
+        <circle cx="23" cy="23" r="4" fill="#2B2B2B"/>
+        <circle cx="9" cy="23" r="1.6" fill="#777"/>
+        <circle cx="23" cy="23" r="1.6" fill="#777"/>
+      </g>
+      <!-- state icon above car -->
+      <g id="carStateIcon" transform="translate(-9,-40)" color="${atmo}"></g>
+    </g>
+  `;
+
+  // put state icon above car
+  const carIcon = svg.querySelector('#carStateIcon');
+  const iconSvg = ICON[stateKey].replace('<svg', '<svg width="18" height="18"');
+  carIcon.innerHTML = iconSvg;
+
+  // labels text
+  svg.querySelector('#wallLabelText').textContent = T[lang].wallLabel;
+  svg.querySelector('#habitLabelText').textContent = T[lang].habitLabel;
+  svg.querySelector('#newRouteText').textContent = T[lang].newRoute;
+}
+
+function animateRoad() {
+  const svg = document.getElementById('mapSvg');
+  const road = svg.querySelector('#oldRoad');
+  const car = svg.querySelector('#carGroup');
+  const wall = svg.querySelector('#wallGroup');
+
+  // draw road
+  road.style.transition = 'stroke-dashoffset 1.6s ease';
+  requestAnimationFrame(() => { road.style.strokeDashoffset = '0'; });
+
+  // car drives along path
+  car.setAttribute('opacity', '1');
+  const path = svg.querySelector('#oldRoad');
+  const len = path.getTotalLength();
+  const dur = 1600;
+  let start = null;
+  function step(ts) {
+    if (!start) start = ts;
+    const prog = Math.min((ts - start) / dur, 1);
+    const pt = path.getPointAtLength(prog * len * 0.98);
+    car.setAttribute('transform', `translate(${pt.x},${pt.y})`);
+    if (prog < 1) requestAnimationFrame(step);
+    else {
+      // show wall + little bump
+      wall.setAttribute('opacity', '1');
+      wall.style.transition = 'opacity 0.4s';
+      bumpCar(car, pt);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function bumpCar(car, pt) {
+  let t0 = null;
+  function b(ts) {
+    if (!t0) t0 = ts;
+    const p = (ts - t0) / 600;
+    if (p < 1) {
+      const off = Math.sin(p * Math.PI * 3) * 4 * (1 - p);
+      car.setAttribute('transform', `translate(${pt.x - Math.abs(off)},${pt.y})`);
+      requestAnimationFrame(b);
+    } else {
+      car.setAttribute('transform', `translate(${pt.x},${pt.y})`);
+    }
+  }
+  requestAnimationFrame(b);
+}
+
+function revealWall() {
+  if (wallRevealed) return;
+  wallRevealed = true;
+  const svg = document.getElementById('mapSvg');
+  document.getElementById('mapCtaHint').classList.add('hidden');
+
+  // wall becomes translucent
+  const wallRect = svg.querySelector('#wallRect');
+  svg.querySelector('#wallGroup').style.transition = 'opacity 0.5s';
+  svg.querySelector('#wallGroup').setAttribute('opacity', '0.35');
+
+  // habit marker appears
+  const habit = svg.querySelector('#habitMarker');
+  habit.style.transition = 'opacity 0.5s';
+  habit.setAttribute('opacity', '1');
+  setTimeout(() => {
+    svg.querySelector('#habitLabelBox').style.transition = 'opacity 0.5s';
+    svg.querySelector('#habitLabelBox').setAttribute('opacity', '1');
+  }, 400);
+
+  // draw new road
+  setTimeout(() => {
+    const newRoad = svg.querySelector('#newRoadPath');
+    newRoad.setAttribute('opacity', '1');
+    newRoad.style.transition = 'stroke-dashoffset 1.3s ease';
+    newRoad.style.strokeDashoffset = '0';
+  }, 700);
+
+  // car moves to new route
+  setTimeout(() => moveCarNewRoute(), 1400);
+
+  // flag
+  setTimeout(() => {
+    const flag = svg.querySelector('#flagGroup');
+    flag.style.transition = 'opacity 0.5s';
+    flag.setAttribute('opacity', '1');
+  }, 2600);
+
+  // reveal insight blocks
+  setTimeout(() => revealInsights(), 1200);
+}
+
+function moveCarNewRoute() {
+  const svg = document.getElementById('mapSvg');
+  const car = svg.querySelector('#carGroup');
+  const path = svg.querySelector('#newRoadPath');
+  const len = path.getTotalLength();
+  const dur = 1400;
+  let start = null;
+  function step(ts) {
+    if (!start) start = ts;
+    const prog = Math.min((ts - start) / dur, 1);
+    const pt = path.getPointAtLength(prog * len);
+    car.setAttribute('transform', `translate(${pt.x},${pt.y})`);
+    if (prog < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function revealInsights() {
+  const ids = ['ib1', 'ib2', 'ib3'];
+  ids.forEach((id, i) => {
+    setTimeout(() => document.getElementById(id).classList.add('show'), i * 450);
+  });
+  setTimeout(() => document.getElementById('resultFormTrigger').classList.add('show'), ids.length * 450 + 200);
+}
+
+// ============ FORM ============
+function validContact(v) {
+  v = v.trim();
+  if (!v) return false;
+  if (v.startsWith('@') && v.length > 2) return true; // Telegram @username
+  const digits = v.replace(/\D/g, '');
+  return digits.length >= 7; // any international number
+}
+
+async function submitForm() {
+  const nameEl=document.getElementById('inputName'); const contactEl=document.getElementById('inputContact');
+  const name=nameEl.value.trim(); const contact=contactEl.value.trim(); let ok=true;
+  if(!name){nameEl.classList.add('error');ok=false;} if(!validContact(contact)){contactEl.classList.add('error');ok=false;} if(!ok)return;
+  userName=name; const btn=document.getElementById('btnSubmit'); btn.disabled=true;
+  const oldLabel=btn.querySelector('span').textContent; btn.querySelector('span').textContent='...';
+  const qs=T[lang].questions; const answerTexts=qs.map((q,i)=>(answerIdx[i]||[]).map(idx=>q.opts[idx]?.t).filter(Boolean).join(', '));
+  try{
+    const response=await fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,contact,lang,answerTexts,questions:qs.map(q=>q.q)})});
+    if(!response.ok)throw new Error('Lead endpoint returned '+response.status);
+    try{gtag('event','generate_lead')}catch(e){} try{if(typeof fbq==='function')fbq('track','Lead')}catch(e){} showThanks();
+  }catch(e){console.error('Lead submission error:',e);btn.disabled=false;btn.querySelector('span').textContent=oldLabel;alert(lang==='uk'?'Не вдалося надіслати заявку. Спробуйте ще раз.':'Не удалось отправить заявку. Попробуйте ещё раз.');}
+}
+
+function escapeHtml(s) { return s.replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c])); }
+
+function showThanks() {
+  const title = lang === 'uk' ? `Дякую, ${userName}!` : `Спасибо, ${userName}!`;
+  document.getElementById('thanksTitle').textContent = title;
+  renderTexts();
+  goTo('thanks');
+}
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.form-input').forEach(inp => inp.addEventListener('input', () => inp.classList.remove('error')));
+  renderTexts();
+});
+
+</script>
+</body>
+</html>
