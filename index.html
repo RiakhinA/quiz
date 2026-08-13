@@ -909,6 +909,14 @@ let answerIdx = [];     // stored answer index per question (for map)
 let selectedOpts = [];
 let userName = '';
 let wallRevealed = false;
+const urlParams = new URLSearchParams(window.location.search);
+const utm = {
+  source: urlParams.get('utm_source') || '',
+  medium: urlParams.get('utm_medium') || '',
+  campaign: urlParams.get('utm_campaign') || '',
+  content: urlParams.get('utm_content') || '',
+  term: urlParams.get('utm_term') || ''
+};
 let quizStartedTracked = false;
 let quizCompletedTracked = false;
 
@@ -1281,7 +1289,7 @@ async function submitForm() {
   const oldLabel=btn.querySelector('span').textContent; btn.querySelector('span').textContent='...';
   const qs=T[lang].questions; const answerTexts=qs.map((q,i)=>(answerIdx[i]||[]).map(idx=>q.opts[idx]?.t).filter(Boolean).join(', '));
   try{
-    const response=await fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,contact,lang,answerTexts,questions:qs.map(q=>q.q)})});
+    const response=await fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,contact,lang,answerTexts,questions:qs.map(q=>q.q),utm})});
     if(!response.ok)throw new Error('Lead endpoint returned '+response.status);
     try{gtag('event','generate_lead')}catch(e){} try{if(typeof fbq==='function')fbq('track','Lead')}catch(e){} showThanks();
   }catch(e){console.error('Lead submission error:',e);btn.disabled=false;btn.querySelector('span').textContent=oldLabel;alert(lang==='uk'?'Не вдалося надіслати заявку. Спробуйте ще раз.':'Не удалось отправить заявку. Попробуйте ещё раз.');}

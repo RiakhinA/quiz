@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const { name, contact, lang, answerTexts = [], questions = [] } = req.body || {};
+  const { name, contact, lang, answerTexts = [], questions = [], utm = {} } = req.body || {};
   if (!name || !contact) return res.status(400).json({ error: "Name and contact are required" });
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -19,7 +19,13 @@ export default async function handler(req, res) {
   }[c]));
 
   let text = `<b>🎯 Новая заявка с квиза «Карта выхода»!</b>\n\n`;
-  text += `<b>Имя:</b> ${esc(name)}\n<b>Контакт:</b> ${esc(contact)}\n<b>Язык:</b> ${esc(lang).toUpperCase()}\n\n<b>Ответы:</b>\n`;
+  text += `<b>Имя:</b> ${esc(name)}\n<b>Контакт:</b> ${esc(contact)}\n<b>Язык:</b> ${esc(lang).toUpperCase()}\n`;
+  if (utm && (utm.source || utm.medium || utm.campaign || utm.content || utm.term)) {
+    text += `<b>Источник:</b> ${esc(utm.source || '—')} / ${esc(utm.medium || '—')} / ${esc(utm.campaign || '—')}\n`;
+    if (utm.content) text += `<b>UTM content:</b> ${esc(utm.content)}\n`;
+    if (utm.term) text += `<b>UTM term:</b> ${esc(utm.term)}\n`;
+  }
+  text += `\n<b>Ответы:</b>\n`;
   questions.forEach((q, i) => {
     text += `${i + 1}. ${esc(q)}\n→ ${esc(answerTexts[i] || "—")}\n`;
   });
