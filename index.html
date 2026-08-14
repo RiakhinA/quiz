@@ -1415,5 +1415,41 @@ document.addEventListener('DOMContentLoaded', () => {
   if(qa){window.addEventListener('load',()=>{setTimeout(()=>{try{const qn=qs.get('qaName')||'';const qp=qs.get('qaPhone')||'';bookingDay=qs.get('qaDay')||'today';bookingDate=qs.get('qaDate')||'';if(document.getElementById('inputName'))document.getElementById('inputName').value=qn;if(document.getElementById('finalName'))document.getElementById('finalName').value=qn;if(document.getElementById('inputContact'))document.getElementById('inputContact').value=qp;if(document.getElementById('finalContact'))document.getElementById('finalContact').value=qp;if(qa==='custom'){goTo('customtime')}else if(qa==='comment'){bookingCustom='';bookingTime=qs.get('qaLabel')||'';goTo('booking-comment');updateBookingSummary();renderBookingTexts()}}catch(e){console.error(e)}},100)})}
 })();
 </script>
+
+<script id="booking-day-persistence-fix">
+(function(){
+  function setDayState(day){
+    try{sessionStorage.setItem('bookingDay',day);if(day!=='other')sessionStorage.removeItem('bookingDate')}catch(e){}
+    try{bookingDay=day;if(day!=='other')bookingDate=''}catch(e){}
+  }
+  document.addEventListener('click',function(e){
+    const dayBtn=e.target.closest && e.target.closest('.day-btn');
+    if(dayBtn){
+      const ru=(dayBtn.getAttribute('data-bk-ru')||dayBtn.textContent||'').trim().toLowerCase();
+      const uk=(dayBtn.getAttribute('data-bk-uk')||'').trim().toLowerCase();
+      if(ru.includes('завтра')||uk.includes('завтра')) setDayState('tomorrow');
+      else if(ru.includes('другой')||uk.includes('інший')) setDayState('other');
+      else setDayState('today');
+    }
+    const slot=e.target.closest && e.target.closest('.slot-btn');
+    if(slot){
+      try{
+        const savedDay=sessionStorage.getItem('bookingDay')||'today';
+        const savedDate=sessionStorage.getItem('bookingDate')||'';
+        bookingDay=savedDay;
+        bookingDate=savedDate;
+      }catch(err){}
+    }
+  },true);
+  document.addEventListener('change',function(e){
+    if(e.target && e.target.id==='bookingDateInput'){
+      const v=e.target.value||'';
+      try{sessionStorage.setItem('bookingDay','other');sessionStorage.setItem('bookingDate',v)}catch(err){}
+      try{bookingDay='other';bookingDate=v}catch(err){}
+    }
+  },true);
+})();
+</script>
+
 </body>
 </html>
