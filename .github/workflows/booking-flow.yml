@@ -21,7 +21,6 @@ jobs:
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
 
-          # 1) Name is required; phone is explicitly optional.
           s=s.replace('data-bk-uk="Ваше ім’я" data-bk-ru="Ваше имя"></label><input class="form-input" id="inputName" type="text"',
                       'data-bk-uk="Ваше ім’я *" data-bk-ru="Ваше имя *"></label><input class="form-input" id="inputName" type="text" required')
           s=s.replace('data-bk-uk="Телефон — якщо зручно" data-bk-ru="Телефон — если удобно"',
@@ -31,13 +30,10 @@ jobs:
           new_start="function startBooking(){const nameEl=document.getElementById('inputName');const n=(nameEl?.value||'').trim();if(!n){nameEl?.classList.add('error');nameEl?.focus();return}nameEl?.classList.remove('error');try{gtag('event','booking_start')}catch(e){};const c=document.getElementById('inputContact')?.value||'';if(document.getElementById('finalName'))document.getElementById('finalName').value=n;if(document.getElementById('finalContact'))document.getElementById('finalContact').value=c;bookingDay='today';bookingDate='';renderSlots();goTo('booking-time');renderBookingTexts()}"
           s=s.replace(old_start,new_start)
 
-          # 2) First screen direct-contact buttons get the same recognizable icon-card treatment.
           old_social='<div class="social-links"><a class="social-link" href="https://ig.me/m/anton_riakhin_psy" target="_blank" rel="noopener noreferrer" onclick="trackMessengerOnly(\'Instagram\')">Instagram</a><a class="social-link" href="https://t.me/riakhin_anton" target="_blank" rel="noopener noreferrer" onclick="trackMessengerOnly(\'Telegram\')">Telegram</a></div>'
           new_social='''<div class="messengers booking-direct-messengers"><a class="messenger-btn" href="https://ig.me/m/anton_riakhin_psy" target="_blank" rel="noopener noreferrer" onclick="trackMessengerOnly('Instagram')"><span class="messenger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#C13584" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="#C13584" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="#C13584"/></svg></span><span>Instagram</span></a><a class="messenger-btn" href="https://t.me/riakhin_anton" target="_blank" rel="noopener noreferrer" onclick="trackMessengerOnly('Telegram')"><span class="messenger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#229ED9"><path d="M21.6 3.2 18.4 20c-.24 1.18-.87 1.47-1.76.92l-4.88-3.6-2.35 2.27c-.26.26-.48.48-.98.48l.35-4.98 9.07-8.2c.4-.35-.09-.55-.61-.2L6.03 13.75l-4.83-1.51c-1.05-.33-1.07-1.05.22-1.56L20.3 3.4c.88-.32 1.65.2 1.3-.2Z"/></svg></span><span>Telegram</span></a></div>'''
           s=s.replace(old_social,new_social)
 
-          # 3) Viber personal-account links are not reliably supported by browsers.
-          # Keep the deep-link attempt, but copy the number and show a fallback if the app does not open.
           s=s.replace('<a class="messenger-btn" href="viber://chat?number=%2B380935503707" onclick="trackMessengerLink(event,\'Viber\')">',
                       '<a class="messenger-btn" href="viber://chat?number=%2B380935503707" onclick="return openViberFallback(event)">')
           if 'function openViberFallback' not in s:
@@ -52,11 +48,25 @@ function openViberFallback(ev){
               s=s.replace('// BOOKING_FLOW_JS_END',insert+'\n// BOOKING_FLOW_JS_END',1)
 
           p.write_text(s,encoding='utf-8')
+
+          md=Path('PROJECT_LOGIC.md')
+          if md.exists():
+              m=md.read_text(encoding='utf-8')
+              m=m.replace('- Instagram: https://ig.me/m/anton__riakhin__psy','- Instagram: https://ig.me/m/anton_riakhin_psy  — ПРОВЕРЕНО, работает')
+              m=m.replace('- Telegram: https://t.me/riakhin_anton','- Telegram: https://t.me/riakhin_anton  — ПРОВЕРЕНО, работает')
+              m=m.replace('- WhatsApp: https://wa.me/380935503707','- WhatsApp: https://wa.me/380935503707  — ПРОВЕРЕНО, работает')
+              m=m.replace('- Viber: viber://chat?number=%2B380935503707','- Viber: viber://chat?number=%2B380935503707  — НЕ СЧИТАТЬ НАДЁЖНОЙ ССЫЛКОЙ; браузеры/desktop могут не открыть личный чат. Использовать fallback: копировать номер +380935503707 и пробовать открыть приложение.')
+              m=m.replace('Instagram-профиль/username сверять особенно внимательно: `anton__riakhin__psy` — с двойными подчёркиваниями.','Проверенные рабочие направления не менять без повторного теста. Для Instagram рабочая ссылка на текущем квизе: `https://ig.me/m/anton_riakhin_psy`.')
+              m=m.replace('### Экран 1 — запись\n- Имя.\n- Телефон, если удобно.','### Экран 1 — запись\n- Имя — обязательное поле. Без имени не переходить к выбору времени.\n- Телефон — необязательное поле; это нужно явно писать в подписи.')
+              diary='\n- QA 14.08: повторно подтверждены рабочие ссылки Instagram `https://ig.me/m/anton_riakhin_psy`, Telegram `https://t.me/riakhin_anton`, WhatsApp `https://wa.me/380935503707`; сохранить их как проверенные.\n- QA 14.08: Viber-ссылка на личный чат по номеру не сработала. Официальная документация Viber надёжно описывает deep links для ботов, но не гарантирует personal-chat-by-number из браузера; добавлен fallback с копированием номера.\n- UX 14.08: имя на первом экране записи сделано обязательным; телефон оставлен необязательным и это явно обозначено.\n- UX 14.08: прямые Instagram/Telegram на первом экране оформляются как узнаваемые кнопки-карточки с иконками, как на финальном экране.\n'
+              if 'QA 14.08: повторно подтверждены рабочие ссылки' not in m:
+                  m=m.rstrip()+diary+'\n'
+              md.write_text(m,encoding='utf-8')
           PY
       - name: Commit patch
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html
-          git diff --cached --quiet || git commit -m 'Fix booking name, optional phone, contact cards and Viber fallback'
+          git add index.html PROJECT_LOGIC.md
+          git diff --cached --quiet || git commit -m 'Fix booking UX and persist verified messenger links'
           git push
