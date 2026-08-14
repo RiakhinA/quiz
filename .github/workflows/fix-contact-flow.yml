@@ -28,8 +28,9 @@ jobs:
           'Вариант 1 — оставьте имя и номер, и я сам напишу или позвоню для подтверждения.':'Вариант 1 — оставьте имя и номер и выберите, в каком мессенджере вам удобнее получить подтверждение. Я напишу вам сам.',
           'Варіант 2 — напишіть мені самі. Я вже отримаю в Telegram вибраний час і ваш коментар, а чат відкриється окремо.':'Варіант 2 — напишіть мені самі в одній зі зручних соцмереж або месенджерів. Я вже отримаю вибраний час і ваш коментар.',
           'Вариант 2 — напишите мне сами. Я уже получу в Telegram выбранное время и ваш комментарий, а чат откроется отдельно.':'Вариант 2 — напишите мне сами в одной из удобных соцсетей или мессенджеров. Я уже получу выбранное время и ваш комментарий.',
-          "https://ig.me/m/anton_riakhin_psy":"https://www.instagram.com/anton.riahin/",
-          "https://t.me/riakhin_anton":"https://t.me/anton_riahin",
+          'https://ig.me/m/anton_riakhin_psy':'https://ig.me/m/anton__riakhin__psy',
+          'https://www.instagram.com/anton.riahin/':'https://ig.me/m/anton__riakhin__psy',
+          'https://t.me/anton_riahin':'https://t.me/riakhin_anton',
           "<button class=\"messenger-btn disabled\" type=\"button\" title=\"Додамо після підтвердження номера\">WhatsApp</button>":"<a class=\"messenger-btn\" href=\"#\" onclick=\"openMessenger(event,'WhatsApp','https://wa.me/380935503707')\">WhatsApp</a>",
           "<button class=\"messenger-btn disabled\" type=\"button\" title=\"Додамо після підтвердження номера\">Viber</button>":"<a class=\"messenger-btn\" href=\"#\" onclick=\"openMessenger(event,'Viber','viber://chat?number=%2B380935503707')\">Viber</a>",
           '<p class=\"booking-note\" data-bk-uk=\"WhatsApp і Viber додамо, щойно зафіксуємо номер, на який мають вести кнопки.\" data-bk-ru=\"WhatsApp и Viber добавим, как только зафиксируем номер, на который должны вести кнопки.\"></p>':'<p class=\"booking-note\" data-bk-uk=\"Оберіть зручний спосіб — чат відкриється окремо.\" data-bk-ru=\"Выберите удобный способ — чат откроется отдельно.\"></p>',
@@ -39,16 +40,23 @@ jobs:
           for a,b in replacements.items():
               s=s.replace(a,b)
 
-          # Add preferred messenger selector to option 1 before submit button.
           marker='<button class="booking-primary" id="bookingSubmitBtn" onclick="submitBooking()"'
           if 'id="replyMessenger"' not in s and marker in s:
               chooser='''<div class="form-field"><label class="form-label" data-bk-uk="Куди вам написати?" data-bk-ru="Куда вам написать?"></label><select class="form-input" id="replyMessenger"><option value="Telegram">Telegram</option><option value="WhatsApp">WhatsApp</option><option value="Viber">Viber</option><option value="Instagram">Instagram</option></select></div>'''
               s=s.replace(marker,chooser+marker,1)
 
-          # Include chosen reply messenger in form payload / analytics.
           old="bookingPayload({mode:'form',contactChannel:'phone'})"
           new="bookingPayload({mode:'form',contactChannel:(document.getElementById('replyMessenger')?.value||'Telegram')})"
           s=s.replace(old,new)
+
+          # Make custom-time choice visually read as a real green CTA.
+          s=s.replace(".booking-secondary{width:100%;background:transparent;color:var(--teal-dark);border:1.5px dashed #B8C9C6;border-radius:14px;padding:15px 16px;font:700 14px 'Manrope',sans-serif;cursor:pointer;margin:8px 0 18px;text-align:left}",
+                      ".booking-secondary{width:100%;background:var(--teal-light);color:var(--teal-dark);border:1.5px solid var(--teal);border-radius:14px;padding:16px;font:800 14px 'Manrope',sans-serif;cursor:pointer;margin:12px 0 18px;text-align:left;box-shadow:0 3px 12px var(--teal-glow)}")
+
+          # Opening a messenger after awaiting fetch is treated as a popup by mobile browsers.
+          oldfun="async function openMessenger(ev,channel,url){ev.preventDefault();const payload=bookingPayload({mode:'social_click',contact:'',contactChannel:channel});try{await fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})}catch(e){console.error(e)}try{gtag('event','contact_click',{channel:channel.toLowerCase(),booking_time:bookingDateLabel()})}catch(e){};const msg=(lang==='uk'?'Хочу записатися на розбір. Обрав(ла): ':'Хочу записаться на разбор. Выбрал(а): ')+bookingDateLabel()+(bookingComment?' — '+bookingComment:'');try{await navigator.clipboard.writeText(msg)}catch(e){};window.open(url,'_blank','noopener,noreferrer')}"
+          newfun="function openMessenger(ev,channel,url){ev.preventDefault();const msg=(lang==='uk'?'Хочу записатися на розбір. Обрав(ла): ':'Хочу записаться на разбор. Выбрал(а): ')+bookingDateLabel()+(bookingComment?' — '+bookingComment:'');try{navigator.clipboard&&navigator.clipboard.writeText(msg)}catch(e){};try{gtag('event','contact_click',{channel:channel.toLowerCase(),booking_time:bookingDateLabel()})}catch(e){};const payload=bookingPayload({mode:'social_click',contact:'',contactChannel:channel});try{fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true}).catch(()=>{})}catch(e){};window.location.href=url}"
+          s=s.replace(oldfun,newfun)
 
           p.write_text(s,encoding='utf-8')
           PY
@@ -58,5 +66,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Fix contact options and messenger destinations"
+          git commit -m "Fix messenger launches and custom time CTA"
           git push
