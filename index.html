@@ -363,6 +363,9 @@ svg { display: block; }
   .lang-bar { position:relative; }
 }
 @media (max-width:560px){ .hero-wrap{padding:28px 16px 48px}.form-outer,.thanks-outer{padding:24px 16px}.form-card,.thanks-card{padding:28px 20px} }
+
+/* booking-contact-hint-fix */
+.booking-contact-hint{position:static!important;display:block!important;margin-top:8px!important;line-height:1.45!important;font-size:12px!important;color:var(--muted)!important;}
 </style>
   <meta property="og:image" content="https://bolt.new/static/og_default.png">
     <meta name="twitter:card" content="summary_large_image">
@@ -1313,7 +1316,7 @@ function renderSlots(){const g=document.getElementById('slotGrid');if(!g)return;
 function selectSlot(t,b){if(bookingDay==='other'&&!bookingDate){document.getElementById('bookingDateInput').focus();return}bookingTime=t;bookingCustom='';document.querySelectorAll('.slot-btn').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');try{gtag('event','time_selected',{time:t,day:bookingDay})}catch(e){};setTimeout(()=>{goTo('booking-comment');updateBookingSummary();renderBookingTexts()},180)}
 function goToCustomTime(){bookingTime='';goTo('customtime');renderBookingTexts()}
 function continueCustomTime(){const el=document.getElementById('customTimeText');const v=(el.value||'').trim();if(!v){el.classList.add('error');return}bookingCustom=v;bookingDate='';bookingTime='';try{gtag('event','custom_time_entered')}catch(e){};goTo('booking-comment');updateBookingSummary();renderBookingTexts()}
-function updateBookingSummary(){const txt=bookingDateLabel();['bookingSelectedText','bookingFinalSelected'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=(lang==='uk'?'Обраний час: ':'Выбранное время: ')+txt})}
+function updateBookingSummary(){const txt=bookingDateLabel();const prefix=bookingCustom?(lang==='uk'?'Запропонований вами час: ':'Предложенное вами время: '):(lang==='uk'?'Обраний час: ':'Выбранное время: ');['bookingSelectedText','bookingFinalSelected'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=prefix+txt})}
 function continueToContact(){bookingComment=(document.getElementById('bookingComment')?.value||'').trim();goTo('booking-contact');const n=document.getElementById('inputName')?.value||'';const c=document.getElementById('inputContact')?.value||'';if(document.getElementById('finalName')&&!document.getElementById('finalName').value)document.getElementById('finalName').value=n;if(document.getElementById('finalContact')&&!document.getElementById('finalContact').value)document.getElementById('finalContact').value=c;updateBookingSummary();renderBookingTexts()}
 function bookingPayload(extra={}){const qs=T[lang].questions;const answerTexts=qs.map((q,i)=>(answerIdx[i]||[]).map(idx=>q.opts[idx]?.t).filter(Boolean).join(', '));return {name:(document.getElementById('finalName')?.value||document.getElementById('inputName')?.value||'').trim(),contact:(document.getElementById('finalContact')?.value||document.getElementById('inputContact')?.value||'').trim(),lang,answerTexts,questions:qs.map(q=>q.q),utm,bookingDate:bookingCustom?'':bookingDateLabel().replace(bookingTime,'').replace(/,\s*$/,''),bookingTime,bookingCustom,bookingComment,...extra}}
 async function submitBooking(){const nameEl=document.getElementById('finalName'),contactEl=document.getElementById('finalContact');const name=nameEl.value.trim(),contact=contactEl.value.trim();let ok=true;if(!name){nameEl.classList.add('error');ok=false}if(!validContact(contact)){contactEl.classList.add('error');ok=false}if(!ok)return;userName=name;const btn=document.getElementById('bookingSubmitBtn');btn.disabled=true;try{const r=await fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(bookingPayload({mode:'form',contactChannel:(document.getElementById('replyMessenger')?.value||'Telegram')}))});if(!r.ok)throw new Error('lead '+r.status);try{gtag('event','booking_submit',{method:'phone'})}catch(e){};try{if(typeof fbq==='function')fbq('track','Lead')}catch(e){};showThanks()}catch(e){console.error(e);btn.disabled=false;alert(lang==='uk'?'Не вдалося надіслати заявку. Спробуйте ще раз.':'Не удалось отправить заявку. Попробуйте ещё раз.')}}
@@ -1389,14 +1392,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const qs=new URLSearchParams(location.search);
   const qa=qs.get('qaBooking');
   function openQa(screen,label){
-    const u=new URL(location.href);u.searchParams.set('qaBooking',screen);if(label)u.searchParams.set('qaLabel',label);window.open(u.toString(),'_blank');
+    const u=new URL(location.href);
+    u.searchParams.set('qaBooking',screen);
+    if(label)u.searchParams.set('qaLabel',label);
+    const n=document.getElementById('inputName')?.value||document.getElementById('finalName')?.value||'';
+    const c=document.getElementById('inputContact')?.value||document.getElementById('finalContact')?.value||'';
+    if(n)u.searchParams.set('qaName',n);else u.searchParams.delete('qaName');
+    if(c)u.searchParams.set('qaPhone',c);else u.searchParams.delete('qaPhone');
+    u.searchParams.set('qaDay',typeof bookingDay!=='undefined'?bookingDay:'today');
+    if(typeof bookingDate!=='undefined'&&bookingDate)u.searchParams.set('qaDate',bookingDate);else u.searchParams.delete('qaDate');
+    window.open(u.toString(),'_blank');
   }
   function bind(){
     document.querySelectorAll('.slot-btn').forEach(b=>{if(b.dataset.qaBound)return;b.dataset.qaBound='1';b.addEventListener('contextmenu',e=>{e.preventDefault();openQa('comment',b.textContent.trim())})});
     const c=document.querySelector('.booking-secondary');if(c&&!c.dataset.qaBound){c.dataset.qaBound='1';c.addEventListener('contextmenu',e=>{e.preventDefault();openQa('custom','')})}
   }
   new MutationObserver(bind).observe(document.documentElement,{subtree:true,childList:true});bind();
-  if(qa){window.addEventListener('load',()=>{setTimeout(()=>{try{if(qa==='custom'){goTo('customtime')}else if(qa==='comment'){bookingCustom='ТЕСТ: '+(qs.get('qaLabel')||'выбранное время');bookingDate='';bookingTime='';goTo('booking-comment');updateBookingSummary();renderBookingTexts()}}catch(e){console.error(e)}},100)})}
+  if(qa){window.addEventListener('load',()=>{setTimeout(()=>{try{const qn=qs.get('qaName')||'';const qp=qs.get('qaPhone')||'';bookingDay=qs.get('qaDay')||'today';bookingDate=qs.get('qaDate')||'';if(document.getElementById('inputName'))document.getElementById('inputName').value=qn;if(document.getElementById('finalName'))document.getElementById('finalName').value=qn;if(document.getElementById('inputContact'))document.getElementById('inputContact').value=qp;if(document.getElementById('finalContact'))document.getElementById('finalContact').value=qp;if(qa==='custom'){goTo('customtime')}else if(qa==='comment'){bookingCustom='';bookingTime=qs.get('qaLabel')||'';goTo('booking-comment');updateBookingSummary();renderBookingTexts()}}catch(e){console.error(e)}},100)})}
 })();
 </script>
 </body>
