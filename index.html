@@ -1077,6 +1077,11 @@ function renderResultTexts() {
   const t = T[lang];
   const q6 = answerIdx[5] || [0];
   document.getElementById('accentText').textContent = t.accents[q6[0]] || t.accents[0];
+  const mapSvg = document.getElementById('mapSvg');
+  const wallLabel = mapSvg && mapSvg.querySelector('#wallLabelText');
+  const routeLabel = mapSvg && mapSvg.querySelector('#newRouteText');
+  if (wallLabel) wallLabel.textContent = t.wallLabel.toUpperCase();
+  if (routeLabel) routeLabel.textContent = t.newRoute.toUpperCase();
 }
 
 function showResult() {
