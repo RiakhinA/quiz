@@ -1,0 +1,62 @@
+name: Fix booking contact flow
+
+on:
+  workflow_run:
+    workflows: ["Add booking flow"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Fix contact screen
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+
+          replacements={
+          'Варіант 1 — залиште ім’я і номер, і я сам напишу або зателефоную для підтвердження.':'Варіант 1 — залиште ім’я і номер та виберіть, у якому месенджері вам зручніше отримати підтвердження. Я напишу вам сам.',
+          'Вариант 1 — оставьте имя и номер, и я сам напишу или позвоню для подтверждения.':'Вариант 1 — оставьте имя и номер и выберите, в каком мессенджере вам удобнее получить подтверждение. Я напишу вам сам.',
+          'Варіант 2 — напишіть мені самі. Я вже отримаю в Telegram вибраний час і ваш коментар, а чат відкриється окремо.':'Варіант 2 — напишіть мені самі в одній зі зручних соцмереж або месенджерів. Я вже отримаю вибраний час і ваш коментар.',
+          'Вариант 2 — напишите мне сами. Я уже получу в Telegram выбранное время и ваш комментарий, а чат откроется отдельно.':'Вариант 2 — напишите мне сами в одной из удобных соцсетей или мессенджеров. Я уже получу выбранное время и ваш комментарий.',
+          "https://ig.me/m/anton_riakhin_psy":"https://www.instagram.com/anton.riahin/",
+          "https://t.me/riakhin_anton":"https://t.me/anton_riahin",
+          "<button class=\"messenger-btn disabled\" type=\"button\" title=\"Додамо після підтвердження номера\">WhatsApp</button>":"<a class=\"messenger-btn\" href=\"#\" onclick=\"openMessenger(event,'WhatsApp','https://wa.me/380935503707')\">WhatsApp</a>",
+          "<button class=\"messenger-btn disabled\" type=\"button\" title=\"Додамо після підтвердження номера\">Viber</button>":"<a class=\"messenger-btn\" href=\"#\" onclick=\"openMessenger(event,'Viber','viber://chat?number=%2B380935503707')\">Viber</a>",
+          '<p class=\"booking-note\" data-bk-uk=\"WhatsApp і Viber додамо, щойно зафіксуємо номер, на який мають вести кнопки.\" data-bk-ru=\"WhatsApp и Viber добавим, как только зафиксируем номер, на который должны вести кнопки.\"></p>':'<p class=\"booking-note\" data-bk-uk=\"Оберіть зручний спосіб — чат відкриється окремо.\" data-bk-ru=\"Выберите удобный способ — чат откроется отдельно.\"></p>',
+          "Хочу записатися на безкоштовну зустріч. Обрав(ла): ":"Хочу записатися на розбір. Обрав(ла): ",
+          "Хочу записаться на бесплатную встречу. Выбрал(а): ":"Хочу записаться на разбор. Выбрал(а): "
+          }
+          for a,b in replacements.items():
+              s=s.replace(a,b)
+
+          # Add preferred messenger selector to option 1 before submit button.
+          marker='<button class="booking-primary" id="bookingSubmitBtn" onclick="submitBooking()"'
+          if 'id="replyMessenger"' not in s and marker in s:
+              chooser='''<div class="form-field"><label class="form-label" data-bk-uk="Куди вам написати?" data-bk-ru="Куда вам написать?"></label><select class="form-input" id="replyMessenger"><option value="Telegram">Telegram</option><option value="WhatsApp">WhatsApp</option><option value="Viber">Viber</option><option value="Instagram">Instagram</option></select></div>'''
+              s=s.replace(marker,chooser+marker,1)
+
+          # Include chosen reply messenger in form payload / analytics.
+          old="bookingPayload({mode:'form',contactChannel:'phone'})"
+          new="bookingPayload({mode:'form',contactChannel:(document.getElementById('replyMessenger')?.value||'Telegram')})"
+          s=s.replace(old,new)
+
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Fix contact options and messenger destinations"
+          git push
