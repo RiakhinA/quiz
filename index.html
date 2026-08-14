@@ -439,6 +439,18 @@ svg { display: block; }
 .map-cta-hint { z-index: 3 !important; }
 </style>
 <!-- MOBILE_LAYOUT_FIX_END -->
+<!-- BOOKING_FLOW_CSS_START -->
+<style id="booking-flow-css">
+.booking-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 18px}.booking-choice button,.slot-btn,.day-btn,.messenger-btn{border:1.5px solid var(--border);background:var(--white);color:var(--text);border-radius:12px;padding:14px 12px;font-family:'Manrope',sans-serif;font-weight:700;cursor:pointer;transition:.2s}.booking-choice button:hover,.slot-btn:hover,.day-btn:hover,.messenger-btn:hover,.slot-btn.selected,.day-btn.selected{border-color:var(--teal);background:var(--teal-light);color:var(--teal-dark)}
+.booking-primary{width:100%;background:var(--teal);color:#fff;border:0;border-radius:14px;padding:17px 18px;font:700 16px 'Manrope',sans-serif;cursor:pointer;margin:8px 0 14px}.booking-primary:hover{background:var(--teal-dark)}
+.booking-secondary{width:100%;background:transparent;color:var(--teal-dark);border:1.5px dashed #B8C9C6;border-radius:14px;padding:15px 16px;font:700 14px 'Manrope',sans-serif;cursor:pointer;margin:8px 0 18px;text-align:left}
+.booking-note{font-size:13px;color:var(--muted);line-height:1.55;margin:7px 0 16px}.booking-selected{background:var(--teal-light);color:var(--teal-dark);border-radius:11px;padding:11px 14px;font-size:13px;font-weight:700;margin-bottom:16px}
+.day-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 16px}.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px}.slot-btn{font-size:14px;padding:13px 8px}.date-input-wrap{display:none;margin:-6px 0 14px}.date-input-wrap.show{display:block}.booking-textarea{width:100%;min-height:130px;resize:vertical;border:1.5px solid var(--border);background:var(--cream);border-radius:12px;padding:14px 15px;font:14px/1.5 'Manrope',sans-serif;color:var(--text);outline:none}.booking-textarea:focus{border-color:var(--teal);background:#fff}
+.messengers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 20px}.messenger-btn{text-align:center;text-decoration:none;font-size:13px;display:flex;align-items:center;justify-content:center;min-height:50px}.messenger-btn.disabled{opacity:.45;cursor:not-allowed}.booking-divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin:18px 0}.booking-divider:before,.booking-divider:after{content:'';height:1px;background:var(--border);flex:1}
+.booking-back{background:none;border:0;color:var(--teal);font:700 13px 'Manrope',sans-serif;cursor:pointer;margin-bottom:18px;padding:0}.booking-heading{font-family:'Playfair Display',serif;font-size:26px;line-height:1.25;margin-bottom:8px}.booking-sub{color:var(--muted);font-size:14px;margin-bottom:18px}.booking-contact-hint{font-size:12px;color:var(--muted);margin-top:-7px;margin-bottom:14px}.booking-social-current{margin-top:22px}.booking-social-current .social-links{grid-template-columns:1fr 1fr}
+@media(max-width:560px){.slots{grid-template-columns:repeat(3,1fr)}.booking-choice,.messengers{grid-template-columns:1fr 1fr}.booking-heading{font-size:24px}}
+</style>
+<!-- BOOKING_FLOW_CSS_END -->
 </head>
 <body>
 
@@ -608,45 +620,47 @@ svg { display: block; }
 
 <!-- ===== FORM ===== -->
 <div id="screen-form" class="screen">
-  <div class="lang-bar">
-    <div class="brand-mark">Антон Ряхін</div>
-    <div class="lang-switch">
-      <button class="lang-btn active" data-lang="uk" onclick="setLang('uk')">UA</button>
-      <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button>
-    </div>
-  </div>
-  <div class="form-outer">
-    <div class="form-card">
-      <div class="form-eyebrow">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        <span data-t="formEyebrow"></span>
-      </div>
-      <h2 class="form-title" data-t="formTitle"></h2>
-      <div class="form-gift">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-        <span data-t="formGift"></span>
-      </div>
-      <div class="deficit-bar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span data-t="deficit"></span>
-      </div>
-      <div class="form-field">
-        <label class="form-label" data-t="labelName"></label>
-        <input class="form-input" id="inputName" type="text" data-ph="phName">
-      </div>
-      <div class="form-field">
-        <label class="form-label" data-t="labelContact"></label>
-       <input class="form-input" id="inputContact" type="tel" autocomplete="tel" data-ph="phContact" maxlength="21">
-      </div>
-      <button class="btn-submit" id="btnSubmit" onclick="submitForm()"><span data-t="btnSubmit"></span></button>
-      <div class="form-social"><div class="form-social-title" data-t="socialTitle"></div><div class="social-links">
-        <a class="social-link" href="https://ig.me/m/anton_riakhin_psy" target="_blank" rel="noopener noreferrer">Instagram</a>
-        <a class="social-link" href="https://t.me/riakhin_anton" target="_blank" rel="noopener noreferrer">Telegram</a>
-      </div></div>
-      <p class="form-privacy" data-t="privacy"></p>
-    </div>
-  </div>
+  <div class="lang-bar"><div class="brand-mark">Антон Ряхін</div><div class="lang-switch"><button class="lang-btn active" data-lang="uk" onclick="setLang('uk')">UA</button><button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button></div></div>
+  <div class="form-outer"><div class="form-card">
+    <div class="form-gift"><span data-bk-uk="🎁 Безкоштовна зустріч 30 хв — розберемо вашу карту особисто" data-bk-ru="🎁 Бесплатная встреча 30 мин — разберём вашу карту лично"></span></div>
+    <div class="deficit-bar"><span data-bk-uk="Залишилось 3 вільних вікна на цьому тижні" data-bk-ru="Осталось 3 свободных окна на этой неделе"></span></div>
+    <h2 class="booking-heading" data-bk-uk="Готові записатися на безкоштовну зустріч?" data-bk-ru="Готовы записаться на бесплатную встречу?"></h2>
+    <p class="booking-sub" data-bk-uk="Можете одразу залишити ім’я і номер або спочатку вибрати зручний час. Телефон не обов’язковий — нижче можна просто написати мені в чат." data-bk-ru="Можно сразу оставить имя и номер или сначала выбрать удобное время. Телефон не обязателен — ниже можно просто написать мне в чат."></p>
+    <div class="form-field"><label class="form-label" data-bk-uk="Ваше ім’я" data-bk-ru="Ваше имя"></label><input class="form-input" id="inputName" type="text" data-bph-uk="Як вас звати?" data-bph-ru="Как вас зовут?"></div>
+    <div class="form-field"><label class="form-label" data-bk-uk="Телефон — якщо зручно" data-bk-ru="Телефон — если удобно"></label><input class="form-input" id="inputContact" type="tel" autocomplete="tel" data-bph-uk="+ номер телефону" data-bph-ru="+ номер телефона" maxlength="21"><div class="booking-contact-hint" data-bk-uk="Не хочете залишати номер? Це нормально — після вибору часу можна написати мені в Instagram або Telegram." data-bk-ru="Не хотите оставлять номер? Это нормально — после выбора времени можно написать мне в Instagram или Telegram."></div></div>
+    <button class="booking-primary" onclick="startBooking()" data-bk-uk="📅 Вибрати зручний час →" data-bk-ru="📅 Выбрать удобное время →"></button>
+    <div class="booking-social-current"><div class="form-social-title" data-bk-uk="Або зв’яжіться зі мною одразу в одному з чатів" data-bk-ru="Или свяжитесь со мной сразу в одном из чатов"></div><div class="social-links"><a class="social-link" href="https://ig.me/m/anton_riakhin_psy" target="_blank" rel="noopener noreferrer" onclick="trackMessengerOnly('Instagram')">Instagram</a><a class="social-link" href="https://t.me/riakhin_anton" target="_blank" rel="noopener noreferrer" onclick="trackMessengerOnly('Telegram')">Telegram</a></div></div>
+    <p class="form-privacy" data-t="privacy"></p>
+  </div></div>
 </div>
+
+<!-- ===== BOOKING TIME ===== -->
+<div id="screen-booking-time" class="screen"><div class="lang-bar"><div class="brand-mark">Антон Ряхін</div><div class="lang-switch"><button class="lang-btn active" data-lang="uk" onclick="setLang('uk')">UA</button><button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button></div></div><div class="form-outer"><div class="form-card">
+  <button class="booking-back" onclick="goTo('form')" data-bk-uk="← Назад" data-bk-ru="← Назад"></button>
+  <h2 class="booking-heading" data-bk-uk="Виберіть зручний час" data-bk-ru="Выберите удобное время"></h2><p class="booking-sub" data-bk-uk="Оберіть бажаний час з 11:00 до 19:00. Я перевірю, чи він вільний, і підтверджу зустріч." data-bk-ru="Выберите желаемое время с 11:00 до 19:00. Я проверю, свободно ли оно, и подтвержу встречу."></p>
+  <div class="day-tabs"><button class="day-btn selected" id="dayToday" onclick="selectDay('today',this)" data-bk-uk="Сьогодні" data-bk-ru="Сегодня"></button><button class="day-btn" onclick="selectDay('tomorrow',this)" data-bk-uk="Завтра" data-bk-ru="Завтра"></button><button class="day-btn" onclick="selectDay('other',this)" data-bk-uk="Інший день" data-bk-ru="Другой день"></button></div>
+  <div id="otherDateWrap" class="date-input-wrap"><input class="form-input" id="bookingDateInput" type="date" onchange="selectOtherDate(this.value)"></div>
+  <div class="slots" id="slotGrid"></div>
+  <button class="booking-secondary" onclick="goToCustomTime()" data-bk-uk="Не знайшли зручного часу? Напишіть свій варіант — щось придумаємо →" data-bk-ru="Не нашли удобного времени? Напишите свой вариант — что-нибудь придумаем →"></button>
+  <p class="form-privacy" data-t="privacy"></p>
+</div></div></div>
+
+<!-- ===== CUSTOM TIME ===== -->
+<div id="screen-customtime" class="screen"><div class="lang-bar"><div class="brand-mark">Антон Ряхін</div><div class="lang-switch"><button class="lang-btn active" data-lang="uk" onclick="setLang('uk')">UA</button><button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button></div></div><div class="form-outer"><div class="form-card">
+  <button class="booking-back" onclick="goTo('booking-time')" data-bk-uk="← До вибору часу" data-bk-ru="← К выбору времени"></button><h2 class="booking-heading" data-bk-uk="Коли вам було б зручно?" data-bk-ru="Когда вам было бы удобно?"></h2><p class="booking-sub" data-bk-uk="Напишіть день і час у вільній формі — наприклад: «вівторок після 18:00» або «у п’ятницю вранці»." data-bk-ru="Напишите день и время в свободной форме — например: «во вторник после 18:00» или «в пятницу утром»."></p><textarea class="booking-textarea" id="customTimeText" data-bph-uk="Напишіть ваш варіант..." data-bph-ru="Напишите ваш вариант..."></textarea><button class="booking-primary" onclick="continueCustomTime()" data-bk-uk="Далі →" data-bk-ru="Далее →"></button>
+</div></div></div>
+
+<!-- ===== BOOKING COMMENT ===== -->
+<div id="screen-booking-comment" class="screen"><div class="lang-bar"><div class="brand-mark">Антон Ряхін</div><div class="lang-switch"><button class="lang-btn active" data-lang="uk" onclick="setLang('uk')">UA</button><button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button></div></div><div class="form-outer"><div class="form-card">
+  <button class="booking-back" onclick="goTo('booking-time')" data-bk-uk="← Змінити час" data-bk-ru="← Изменить время"></button><h2 class="booking-heading" data-bk-uk="Що вам важливо сказати?" data-bk-ru="Что вам важно сказать?"></h2><div class="booking-selected" id="bookingSelectedText"></div><p class="booking-sub" data-bk-uk="Можете коротко написати тему, побажання або те, що мені варто знати до зустрічі. Поле необов’язкове." data-bk-ru="Можно коротко написать тему, пожелание или то, что мне стоит знать до встречи. Поле необязательное."></p><textarea class="booking-textarea" id="bookingComment" data-bph-uk="Наприклад: хочу поговорити про стосунки; багато тривоги; важко прийняти рішення..." data-bph-ru="Например: хочу поговорить об отношениях; много тревоги; сложно принять решение..."></textarea><button class="booking-primary" onclick="continueToContact()" data-bk-uk="Далі →" data-bk-ru="Далее →"></button>
+</div></div></div>
+
+<!-- ===== BOOKING CONTACT ===== -->
+<div id="screen-booking-contact" class="screen"><div class="lang-bar"><div class="brand-mark">Антон Ряхін</div><div class="lang-switch"><button class="lang-btn active" data-lang="uk" onclick="setLang('uk')">UA</button><button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button></div></div><div class="form-outer"><div class="form-card">
+  <button class="booking-back" onclick="goTo('booking-comment')" data-bk-uk="← Назад" data-bk-ru="← Назад"></button><h2 class="booking-heading" data-bk-uk="Як з вами зв’язатися?" data-bk-ru="Как с вами связаться?"></h2><div class="booking-selected" id="bookingFinalSelected"></div>
+  <p class="booking-sub" data-bk-uk="Варіант 1 — залиште ім’я і номер, і я сам напишу або зателефоную для підтвердження." data-bk-ru="Вариант 1 — оставьте имя и номер, и я сам напишу или позвоню для подтверждения."></p><div class="form-field"><label class="form-label" data-bk-uk="Ваше ім’я" data-bk-ru="Ваше имя"></label><input class="form-input" id="finalName" type="text"></div><div class="form-field"><label class="form-label" data-bk-uk="Номер телефону" data-bk-ru="Номер телефона"></label><input class="form-input" id="finalContact" type="tel" autocomplete="tel" maxlength="21"></div><button class="booking-primary" id="bookingSubmitBtn" onclick="submitBooking()" data-bk-uk="Надіслати заявку →" data-bk-ru="Отправить заявку →"></button>
+  <div class="booking-divider" data-bk-uk="або" data-bk-ru="или"></div><p class="booking-sub" data-bk-uk="Варіант 2 — напишіть мені самі. Я вже отримаю в Telegram вибраний час і ваш коментар, а чат відкриється окремо." data-bk-ru="Вариант 2 — напишите мне сами. Я уже получу в Telegram выбранное время и ваш комментарий, а чат откроется отдельно."></p><div class="messengers"><a class="messenger-btn" href="#" onclick="openMessenger(event,'Instagram','https://ig.me/m/anton_riakhin_psy')">Instagram</a><a class="messenger-btn" href="#" onclick="openMessenger(event,'Telegram','https://t.me/riakhin_anton')">Telegram</a><button class="messenger-btn disabled" type="button" title="Додамо після підтвердження номера">WhatsApp</button><button class="messenger-btn disabled" type="button" title="Додамо після підтвердження номера">Viber</button></div><p class="booking-note" data-bk-uk="WhatsApp і Viber додамо, щойно зафіксуємо номер, на який мають вести кнопки." data-bk-ru="WhatsApp и Viber добавим, как только зафиксируем номер, на который должны вести кнопки."></p><p class="form-privacy" data-t="privacy"></p>
+</div></div></div>
 
 <!-- ===== THANKS ===== -->
 <div id="screen-thanks" class="screen">
@@ -926,6 +940,7 @@ function setLang(l) {
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
   document.documentElement.lang = l;
   renderTexts();
+  renderBookingTexts();
   if (isActive('quiz')) renderQuestion();
   if (isActive('result')) renderResultTexts();
 }
@@ -1272,6 +1287,25 @@ function revealInsights() {
   setTimeout(() => document.getElementById('resultFormTrigger').classList.add('show'), ids.length * 450 + 200);
 }
 
+// BOOKING_FLOW_JS_START
+let bookingDay='today', bookingDate='', bookingTime='', bookingCustom='', bookingComment='';
+function renderBookingTexts(){document.querySelectorAll('[data-bk-uk]').forEach(el=>{el.textContent=lang==='uk'?el.dataset.bkUk:el.dataset.bkRu});document.querySelectorAll('[data-bph-uk]').forEach(el=>{el.placeholder=lang==='uk'?el.dataset.bphUk:el.dataset.bphRu});}
+function bookingDateLabel(){if(bookingCustom)return bookingCustom;let d=bookingDate;if(!d){d=bookingDay==='tomorrow'?(lang==='uk'?'Завтра':'Завтра'):(lang==='uk'?'Сьогодні':'Сегодня')}return [d,bookingTime].filter(Boolean).join(', ')}
+function startBooking(){try{gtag('event','booking_start')}catch(e){};const n=document.getElementById('inputName')?.value||'';const c=document.getElementById('inputContact')?.value||'';if(document.getElementById('finalName'))document.getElementById('finalName').value=n;if(document.getElementById('finalContact'))document.getElementById('finalContact').value=c;bookingDay='today';bookingDate='';renderSlots();goTo('booking-time');renderBookingTexts()}
+function selectDay(day,el){bookingDay=day;bookingDate='';document.querySelectorAll('.day-btn').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');const w=document.getElementById('otherDateWrap');w.classList.toggle('show',day==='other');if(day!=='other')renderSlots()}
+function selectOtherDate(v){bookingDate=v;renderSlots()}
+function renderSlots(){const g=document.getElementById('slotGrid');if(!g)return;g.innerHTML='';['11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'].forEach(t=>{const b=document.createElement('button');b.className='slot-btn';b.textContent=t;b.onclick=()=>selectSlot(t,b);g.appendChild(b)})}
+function selectSlot(t,b){if(bookingDay==='other'&&!bookingDate){document.getElementById('bookingDateInput').focus();return}bookingTime=t;bookingCustom='';document.querySelectorAll('.slot-btn').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');try{gtag('event','time_selected',{time:t,day:bookingDay})}catch(e){};setTimeout(()=>{goTo('booking-comment');updateBookingSummary();renderBookingTexts()},180)}
+function goToCustomTime(){bookingTime='';goTo('customtime');renderBookingTexts()}
+function continueCustomTime(){const el=document.getElementById('customTimeText');const v=(el.value||'').trim();if(!v){el.classList.add('error');return}bookingCustom=v;bookingDate='';bookingTime='';try{gtag('event','custom_time_entered')}catch(e){};goTo('booking-comment');updateBookingSummary();renderBookingTexts()}
+function updateBookingSummary(){const txt=bookingDateLabel();['bookingSelectedText','bookingFinalSelected'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=(lang==='uk'?'Обраний час: ':'Выбранное время: ')+txt})}
+function continueToContact(){bookingComment=(document.getElementById('bookingComment')?.value||'').trim();goTo('booking-contact');const n=document.getElementById('inputName')?.value||'';const c=document.getElementById('inputContact')?.value||'';if(document.getElementById('finalName')&&!document.getElementById('finalName').value)document.getElementById('finalName').value=n;if(document.getElementById('finalContact')&&!document.getElementById('finalContact').value)document.getElementById('finalContact').value=c;updateBookingSummary();renderBookingTexts()}
+function bookingPayload(extra={}){const qs=T[lang].questions;const answerTexts=qs.map((q,i)=>(answerIdx[i]||[]).map(idx=>q.opts[idx]?.t).filter(Boolean).join(', '));return {name:(document.getElementById('finalName')?.value||document.getElementById('inputName')?.value||'').trim(),contact:(document.getElementById('finalContact')?.value||document.getElementById('inputContact')?.value||'').trim(),lang,answerTexts,questions:qs.map(q=>q.q),utm,bookingDate:bookingCustom?'':bookingDateLabel().replace(bookingTime,'').replace(/,\s*$/,''),bookingTime,bookingCustom,bookingComment,...extra}}
+async function submitBooking(){const nameEl=document.getElementById('finalName'),contactEl=document.getElementById('finalContact');const name=nameEl.value.trim(),contact=contactEl.value.trim();let ok=true;if(!name){nameEl.classList.add('error');ok=false}if(!validContact(contact)){contactEl.classList.add('error');ok=false}if(!ok)return;userName=name;const btn=document.getElementById('bookingSubmitBtn');btn.disabled=true;try{const r=await fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(bookingPayload({mode:'form',contactChannel:'phone'}))});if(!r.ok)throw new Error('lead '+r.status);try{gtag('event','booking_submit',{method:'phone'})}catch(e){};try{if(typeof fbq==='function')fbq('track','Lead')}catch(e){};showThanks()}catch(e){console.error(e);btn.disabled=false;alert(lang==='uk'?'Не вдалося надіслати заявку. Спробуйте ще раз.':'Не удалось отправить заявку. Попробуйте ещё раз.')}}
+async function openMessenger(ev,channel,url){ev.preventDefault();const payload=bookingPayload({mode:'social_click',contact:'',contactChannel:channel});try{await fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})}catch(e){console.error(e)}try{gtag('event','contact_click',{channel:channel.toLowerCase(),booking_time:bookingDateLabel()})}catch(e){};const msg=(lang==='uk'?'Хочу записатися на безкоштовну зустріч. Обрав(ла): ':'Хочу записаться на бесплатную встречу. Выбрал(а): ')+bookingDateLabel()+(bookingComment?' — '+bookingComment:'');try{await navigator.clipboard.writeText(msg)}catch(e){};window.open(url,'_blank','noopener,noreferrer')}
+function trackMessengerOnly(channel){try{gtag('event','direct_contact_click',{channel:channel.toLowerCase()})}catch(e){}}
+// BOOKING_FLOW_JS_END
+
 // ============ FORM ============
 function validContact(v) {
   v = v.trim();
@@ -1308,6 +1342,8 @@ function showThanks() {
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.form-input').forEach(inp => inp.addEventListener('input', () => inp.classList.remove('error')));
   renderTexts();
+  renderBookingTexts();
+  renderSlots();
 });
 
 </script>
