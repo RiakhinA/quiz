@@ -791,7 +791,8 @@ const T = {
       "Знайдемо причину, а не ганятимемось за симптомами."
     ],
     wallLabel: "ТУПИК",
-    habitLabel: "Тут ви звернули. За звичкою.",
+    oldRoadLabel: "Звичний шлях, що привів у глухий кут.",
+    newRoadLabel: "Дорога, якої ви раніше не бачили.",
     newRoute: "Новий маршрут",
     questions: [
       { q: "Що найчастіше відчуваєте зараз?", multi: false, opts: [
@@ -891,7 +892,8 @@ const T = {
       "Найдём причину, а не будем гоняться за симптомами."
     ],
     wallLabel: "ТУПИК",
-    habitLabel: "Здесь вы свернули. По привычке.",
+    oldRoadLabel: "Привычный путь, который привёл в тупик.",
+    newRoadLabel: "Дорога, которую вы раньше не видели.",
     newRoute: "Новый маршрут",
     questions: [
       { q: "Что чаще всего чувствуете сейчас?", multi: false, opts: [
@@ -1146,17 +1148,23 @@ function buildMap() {
       </g>
     </g>
 
-    <!-- habit fork marker (hidden) -->
+    <!-- fork marker (hidden) -->
     <g id="habitMarker" opacity="0">
       <circle cx="360" cy="190" r="9" fill="#BE7B4E"/>
       <circle cx="360" cy="190" r="9" fill="none" stroke="#BE7B4E" stroke-width="2">
         <animate attributeName="r" from="9" to="18" dur="1.4s" repeatCount="indefinite"/>
         <animate attributeName="opacity" from="0.6" to="0" dur="1.4s" repeatCount="indefinite"/>
       </circle>
-      <g id="habitLabelBox" opacity="0">
-        <rect x="250" y="230" width="220" height="30" rx="8" fill="#BE7B4E"/>
-        <text x="360" y="250" text-anchor="middle" fill="#fff" font-family="Manrope,sans-serif" font-size="11.5" font-weight="600" id="habitLabelText"></text>
-      </g>
+    </g>
+
+    <!-- route meaning labels (hidden) -->
+    <g id="oldRoadLabelBox" opacity="0">
+      <rect x="205" y="132" width="310" height="30" rx="8" fill="#8A8175"/>
+      <text x="360" y="152" text-anchor="middle" fill="#fff" font-family="Manrope,sans-serif" font-size="10.5" font-weight="600" id="oldRoadLabelText"></text>
+    </g>
+    <g id="newRoadLabelBox" opacity="0">
+      <rect x="220" y="230" width="280" height="30" rx="8" fill="#BE7B4E"/>
+      <text x="360" y="250" text-anchor="middle" fill="#fff" font-family="Manrope,sans-serif" font-size="10.5" font-weight="600" id="newRoadLabelText"></text>
     </g>
 
     <!-- new route flag (hidden) -->
@@ -1190,7 +1198,8 @@ function buildMap() {
 
   // labels text
   svg.querySelector('#wallLabelText').textContent = T[lang].wallLabel;
-  svg.querySelector('#habitLabelText').textContent = T[lang].habitLabel;
+  svg.querySelector('#oldRoadLabelText').textContent = T[lang].oldRoadLabel;
+  svg.querySelector('#newRoadLabelText').textContent = T[lang].newRoadLabel;
   svg.querySelector('#newRouteText').textContent = T[lang].newRoute;
 }
 
@@ -1258,8 +1267,11 @@ function revealWall() {
   habit.style.transition = 'opacity 0.5s';
   habit.setAttribute('opacity', '1');
   setTimeout(() => {
-    svg.querySelector('#habitLabelBox').style.transition = 'opacity 0.5s';
-    svg.querySelector('#habitLabelBox').setAttribute('opacity', '1');
+    ['oldRoadLabelBox','newRoadLabelBox'].forEach(id => {
+      const label = svg.querySelector('#' + id);
+      label.style.transition = 'opacity 0.5s';
+      label.setAttribute('opacity', '1');
+    });
   }, 400);
 
   // draw new road
