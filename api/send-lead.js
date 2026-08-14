@@ -34,14 +34,17 @@ export default async function handler(req, res) {
     "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
   }[c]));
 
-  const title = mode === "social_click"
-    ? "💬 Запись: человек выбрал написать сам"
-    : "🎯 Новая заявка с квиза «Карта выхода»!";
+  const title = mode === "early_social_click"
+    ? "⚡ Ранний контакт: человек решил написать сам"
+    : mode === "social_click"
+      ? "💬 Запись: человек выбрал написать сам"
+      : "🎯 Новая заявка с квиза «Карта выхода»!";
 
   let text = `<b>${title}</b>\n\n`;
   text += `<b>Имя:</b> ${esc(name || "не указано")}\n`;
   if (contact) text += `<b>Контакт:</b> ${esc(contact)}\n`;
   if (contactChannel) text += `<b>Способ связи:</b> ${esc(contactChannel)}\n`;
+  if (mode === "early_social_click") text += `<b>Этап:</b> до выбора даты и времени\n<b>Время:</b> не выбирал\n`;
   if (bookingDate || bookingTime) {
     text += `<b>Желаемое время:</b> ${esc([bookingDate, bookingTime].filter(Boolean).join(" · "))}\n`;
   }
