@@ -1,8 +1,9 @@
 name: Keep booking UX aligned
 
-on:
+'on':
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -38,35 +39,21 @@ jobs:
                       '<a class="messenger-btn" href="viber://chat?number=%2B380935503707" onclick="return openViberFallback(event)">')
           if 'function openViberFallback' not in s:
               insert="""
-function openViberFallback(ev){
-  try{trackMessengerLink(ev,'Viber')}catch(e){ev.preventDefault()}
-  try{navigator.clipboard.writeText('+380935503707')}catch(e){}
-  setTimeout(()=>{if(!document.hidden){alert(lang==='uk'?'Viber не відкрив чат автоматично. Номер +380935503707 скопійовано — відкрийте Viber і вставте його.':'Viber не открыл чат автоматически. Номер +380935503707 скопирован — откройте Viber и вставьте его.')}},1200)
-  return true
-}
-"""
+          function openViberFallback(ev){
+            try{trackMessengerLink(ev,'Viber')}catch(e){ev.preventDefault()}
+            try{navigator.clipboard.writeText('+380935503707')}catch(e){}
+            setTimeout(()=>{if(!document.hidden){alert(lang==='uk'?'Viber не відкрив чат автоматично. Номер +380935503707 скопійовано — відкрийте Viber і вставте його.':'Viber не открыл чат автоматически. Номер +380935503707 скопирован — откройте Viber и вставьте его.')}},1200)
+            return true
+          }
+          """
               s=s.replace('// BOOKING_FLOW_JS_END',insert+'\n// BOOKING_FLOW_JS_END',1)
 
           p.write_text(s,encoding='utf-8')
-
-          md=Path('PROJECT_LOGIC.md')
-          if md.exists():
-              m=md.read_text(encoding='utf-8')
-              m=m.replace('- Instagram: https://ig.me/m/anton__riakhin__psy','- Instagram: https://ig.me/m/anton_riakhin_psy  — ПРОВЕРЕНО, работает')
-              m=m.replace('- Telegram: https://t.me/riakhin_anton','- Telegram: https://t.me/riakhin_anton  — ПРОВЕРЕНО, работает')
-              m=m.replace('- WhatsApp: https://wa.me/380935503707','- WhatsApp: https://wa.me/380935503707  — ПРОВЕРЕНО, работает')
-              m=m.replace('- Viber: viber://chat?number=%2B380935503707','- Viber: viber://chat?number=%2B380935503707  — НЕ СЧИТАТЬ НАДЁЖНОЙ ССЫЛКОЙ; браузеры/desktop могут не открыть личный чат. Использовать fallback: копировать номер +380935503707 и пробовать открыть приложение.')
-              m=m.replace('Instagram-профиль/username сверять особенно внимательно: `anton__riakhin__psy` — с двойными подчёркиваниями.','Проверенные рабочие направления не менять без повторного теста. Для Instagram рабочая ссылка на текущем квизе: `https://ig.me/m/anton_riakhin_psy`.')
-              m=m.replace('### Экран 1 — запись\n- Имя.\n- Телефон, если удобно.','### Экран 1 — запись\n- Имя — обязательное поле. Без имени не переходить к выбору времени.\n- Телефон — необязательное поле; это нужно явно писать в подписи.')
-              diary='\n- QA 14.08: повторно подтверждены рабочие ссылки Instagram `https://ig.me/m/anton_riakhin_psy`, Telegram `https://t.me/riakhin_anton`, WhatsApp `https://wa.me/380935503707`; сохранить их как проверенные.\n- QA 14.08: Viber-ссылка на личный чат по номеру не сработала. Официальная документация Viber надёжно описывает deep links для ботов, но не гарантирует personal-chat-by-number из браузера; добавлен fallback с копированием номера.\n- UX 14.08: имя на первом экране записи сделано обязательным; телефон оставлен необязательным и это явно обозначено.\n- UX 14.08: прямые Instagram/Telegram на первом экране оформляются как узнаваемые кнопки-карточки с иконками, как на финальном экране.\n'
-              if 'QA 14.08: повторно подтверждены рабочие ссылки' not in m:
-                  m=m.rstrip()+diary+'\n'
-              md.write_text(m,encoding='utf-8')
           PY
       - name: Commit patch
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html PROJECT_LOGIC.md
-          git diff --cached --quiet || git commit -m 'Fix booking UX and persist verified messenger links'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Fix booking UX'
           git push
