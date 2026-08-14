@@ -7,8 +7,24 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const { name, contact, lang, answerTexts = [], questions = [], utm = {} } = req.body || {};
-  if (!name || !contact) return res.status(400).json({ error: "Name and contact are required" });
+  const {
+    name = "",
+    contact = "",
+    lang,
+    answerTexts = [],
+    questions = [],
+    utm = {},
+    bookingDate = "",
+    bookingTime = "",
+    bookingCustom = "",
+    bookingComment = "",
+    contactChannel = "",
+    mode = "form"
+  } = req.body || {};
+
+  if (mode === "form" && (!name || !contact)) {
+    return res.status(400).json({ error: "Name and contact are required" });
+  }
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -18,17 +34,33 @@ export default async function handler(req, res) {
     "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
   }[c]));
 
-  let text = `<b>🎯 Новая заявка с квиза «Карта выхода»!</b>\n\n`;
-  text += `<b>Имя:</b> ${esc(name)}\n<b>Контакт:</b> ${esc(contact)}\n<b>Язык:</b> ${esc(lang).toUpperCase()}\n`;
+  const title = mode === "social_click"
+    ? "💬 Запись: человек выбрал написать сам"
+    : "🎯 Новая заявка с квиза «Карта выхода»!";
+
+  let text = `<b>${title}</b>\n\n`;
+  text += `<b>Имя:</b> ${esc(name || "не указано")}\n`;
+  if (contact) text += `<b>Контакт:</b> ${esc(contact)}\n`;
+  if (contactChannel) text += `<b>Способ связи:</b> ${esc(contactChannel)}\n`;
+  if (bookingDate || bookingTime) {
+    text += `<b>Желаемое время:</b> ${esc([bookingDate, bookingTime].filter(Boolean).join(" · "))}\n`;
+  }
+  if (bookingCustom) text += `<b>Своё время:</b> ${esc(bookingCustom)}\n`;
+  if (bookingComment) text += `<b>Комментарий:</b> ${esc(bookingComment)}\n`;
+  text += `<b>Язык:</b> ${esc(lang || "—").toUpperCase()}\n`;
+
   if (utm && (utm.source || utm.medium || utm.campaign || utm.content || utm.term)) {
     text += `<b>Источник:</b> ${esc(utm.source || '—')} / ${esc(utm.medium || '—')} / ${esc(utm.campaign || '—')}\n`;
     if (utm.content) text += `<b>UTM content:</b> ${esc(utm.content)}\n`;
     if (utm.term) text += `<b>UTM term:</b> ${esc(utm.term)}\n`;
   }
-  text += `\n<b>Ответы:</b>\n`;
-  questions.forEach((q, i) => {
-    text += `${i + 1}. ${esc(q)}\n→ ${esc(answerTexts[i] || "—")}\n`;
-  });
+
+  if (questions.length) {
+    text += `\n<b>Ответы:</b>\n`;
+    questions.forEach((q, i) => {
+      text += `${i + 1}. ${esc(q)}\n→ ${esc(answerTexts[i] || "—")}\n`;
+    });
+  }
 
   const tg = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: "POST",
