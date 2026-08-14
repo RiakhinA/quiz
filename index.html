@@ -1077,6 +1077,11 @@ function renderResultTexts() {
   const t = T[lang];
   const q6 = answerIdx[5] || [0];
   document.getElementById('accentText').textContent = t.accents[q6[0]] || t.accents[0];
+  const mapSvg = document.getElementById('mapSvg');
+  const wallLabel = mapSvg && mapSvg.querySelector('#wallLabelText');
+  const routeLabel = mapSvg && mapSvg.querySelector('#newRouteText');
+  if (wallLabel) wallLabel.textContent = t.wallLabel.toUpperCase();
+  if (routeLabel) routeLabel.textContent = t.newRoute.toUpperCase();
 }
 
 function showResult() {
@@ -1096,159 +1101,96 @@ function showResult() {
   setTimeout(animateRoad, 300);
 }
 
-// Build the SVG map based on answers
+// Build the lightweight SVG map. Only this illustration changes; quiz and booking logic stay untouched.
 function buildMap() {
   const svg = document.getElementById('mapSvg');
-  const stateKey = STATE_ICONS[(answerIdx[0] && answerIdx[0][0]) || 0];
-  const q1 = (answerIdx[0] && answerIdx[0][0]) || 0;
-
-  // atmosphere colours by state
-  const stateColors = ['#BE7B4E', '#5B8A9E', '#C0563E', '#8E6BA8'];
-  const atmo = stateColors[q1];
 
   svg.innerHTML = `
     <defs>
-      <linearGradient id="roadGrad" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#C9C2B6"/>
-        <stop offset="100%" stop-color="#A8A093"/>
-      </linearGradient>
-      <linearGradient id="newRoad" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#2E6E6B"/>
-        <stop offset="100%" stop-color="#4FA39F"/>
-      </linearGradient>
-      <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+      <filter id="mapSoft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#34423F" flood-opacity="0.12"/>
       </filter>
+      <marker id="routeArrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#25312F"/>
+      </marker>
+      <clipPath id="mapClip"><rect width="700" height="300" rx="16"/></clipPath>
     </defs>
 
-    <!-- background subtle -->
-    <rect x="0" y="0" width="700" height="300" fill="#FBFAF7"/>
+    <g clip-path="url(#mapClip)">
+      <rect width="700" height="300" fill="#F5F1E7"/>
 
-    <!-- old road path -->
-    <path id="oldRoad" d="M 20 220 Q 150 220 200 200 T 360 190 Q 460 185 520 160"
-      fill="none" stroke="url(#roadGrad)" stroke-width="26" stroke-linecap="round"
-      stroke-dasharray="1400" stroke-dashoffset="1400"/>
-    <path id="oldRoadDash" d="M 20 220 Q 150 220 200 200 T 360 190 Q 460 185 520 160"
-      fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="8 12" opacity="0.6"/>
-
-    <!-- new road (hidden until reveal) -->
-    <path id="newRoadPath" d="M 360 190 Q 420 250 520 250 T 680 210"
-      fill="none" stroke="url(#newRoad)" stroke-width="22" stroke-linecap="round"
-      stroke-dasharray="600" stroke-dashoffset="600" opacity="0"/>
-
-    <!-- WALL / tupik -->
-    <g id="wallGroup" opacity="0">
-      <rect id="wallRect" x="524" y="120" width="30" height="80" rx="4" fill="#8A8175"/>
-      <rect x="524" y="120" width="30" height="20" fill="#78705F"/>
-      <rect x="524" y="145" width="30" height="20" fill="#847B6B"/>
-      <rect x="524" y="170" width="30" height="20" fill="#78705F"/>
-      <g id="wallLabel">
-        <rect x="500" y="92" width="78" height="24" rx="12" fill="#C0563E"/>
-        <text x="539" y="108" text-anchor="middle" fill="#fff" font-family="Manrope,sans-serif" font-size="12" font-weight="700" id="wallLabelText">ТУПИК</text>
+      <!-- Near bank: familiar territory -->
+      <path d="M0 0H350C338 56 367 93 346 142C326 190 352 237 335 300H0Z" fill="#DDE8D2"/>
+      <g fill="none" stroke="#A8B99A" stroke-width="2" opacity="0.72">
+        <path d="M55 55l10-18 10 18H68l9 15H53l9-15zM104 93l8-14 8 14h-5l7 12h-20l7-12zM55 238l9-16 9 16h-6l8 13H53l8-13z"/>
+        <circle cx="150" cy="48" r="12"/><path d="M150 60v14"/>
+        <circle cx="205" cy="255" r="10"/><path d="M205 265v13"/>
       </g>
-    </g>
 
-    <!-- fork marker (hidden) -->
-    <g id="habitMarker" opacity="0">
-      <circle cx="360" cy="190" r="9" fill="#BE7B4E"/>
-      <circle cx="360" cy="190" r="9" fill="none" stroke="#BE7B4E" stroke-width="2">
-        <animate attributeName="r" from="9" to="18" dur="1.4s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" from="0.6" to="0" dur="1.4s" repeatCount="indefinite"/>
-      </circle>
-    </g>
+      <!-- River -->
+      <path d="M374 -30C315 49 405 91 350 155C310 203 386 244 344 330" fill="none" stroke="#B9DCEB" stroke-width="76"/>
+      <path d="M374 -30C315 49 405 91 350 155C310 203 386 244 344 330" fill="none" stroke="#DDF0F7" stroke-width="3" opacity="0.9"/>
 
-    <!-- route meaning labels (hidden) -->
-    <g id="oldRoadLabelBox" opacity="0">
-      <rect x="205" y="132" width="310" height="30" rx="8" fill="#8A8175"/>
-      <text x="360" y="152" text-anchor="middle" fill="#fff" font-family="Manrope,sans-serif" font-size="10.5" font-weight="600" id="oldRoadLabelText"></text>
-    </g>
-    <g id="newRoadLabelBox" opacity="0">
-      <rect x="220" y="230" width="280" height="30" rx="8" fill="#BE7B4E"/>
-      <text x="360" y="250" text-anchor="middle" fill="#fff" font-family="Manrope,sans-serif" font-size="10.5" font-weight="600" id="newRoadLabelText"></text>
-    </g>
+      <!-- Familiar road and route -->
+      <path d="M-20 185C90 181 153 145 238 151C278 154 310 160 340 157" fill="none" stroke="#B9B3A7" stroke-width="24" stroke-linecap="round"/>
+      <path d="M12 185C94 179 154 151 230 153C271 154 305 159 329 157" fill="none" stroke="#25312F" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 17" marker-end="url(#routeArrow)"/>
 
-    <!-- new route flag (hidden) -->
-    <g id="flagGroup" opacity="0">
-      <line x1="660" y1="150" x2="660" y2="185" stroke="#2E6E6B" stroke-width="2.5"/>
-      <path d="M 660 152 L 682 159 L 660 166 Z" fill="#2E6E6B"/>
-      <text x="655" y="140" text-anchor="middle" fill="#2E6E6B" font-family="Manrope,sans-serif" font-size="10" font-weight="700" id="newRouteText"></text>
-    </g>
-
-    <!-- CAR -->
-    <g id="carGroup" opacity="0" transform="translate(20,220)">
-      <g transform="translate(-16,-13)">
-        <rect x="2" y="10" width="28" height="12" rx="4" fill="${atmo}"/>
-        <rect x="7" y="3" width="16" height="10" rx="3" fill="${atmo}"/>
-        <rect x="9" y="5" width="5" height="5" rx="1" fill="#fff" opacity="0.85"/>
-        <rect x="16" y="5" width="5" height="5" rx="1" fill="#fff" opacity="0.85"/>
-        <circle cx="9" cy="23" r="4" fill="#2B2B2B"/>
-        <circle cx="23" cy="23" r="4" fill="#2B2B2B"/>
-        <circle cx="9" cy="23" r="1.6" fill="#777"/>
-        <circle cx="23" cy="23" r="1.6" fill="#777"/>
+      <!-- Dead end stays visible in both states -->
+      <g id="deadEndGroup" opacity="0">
+        <circle cx="342" cy="157" r="11" fill="#C85E48" stroke="#FFFFFF" stroke-width="3" filter="url(#mapSoft)"/>
+        <path d="M342 152v7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="342" cy="163" r="1.4" fill="#fff"/>
+        <rect x="284" y="103" width="116" height="30" rx="15" fill="#C85E48"/>
+        <text id="wallLabelText" x="342" y="123" text-anchor="middle" fill="#fff" font-family="Manrope,sans-serif" font-size="13" font-weight="800"></text>
+        <path d="M342 133v12" stroke="#C85E48" stroke-width="2"/>
       </g>
-      <!-- state icon above car -->
-      <g id="carStateIcon" transform="translate(-9,-40)" color="${atmo}"></g>
+
+      <!-- Everything on the far bank appears only after the click -->
+      <g id="farReveal" opacity="0" style="transition:opacity .65s ease">
+        <path d="M398 0H700V300H388C404 249 345 205 390 153C438 98 368 52 398 0Z" fill="#EEE9DD"/>
+
+        <!-- Park and lake -->
+        <path d="M548 36h112v75H548z" rx="16" fill="#CFE0C4"/>
+        <path d="M592 52c21-15 48 1 41 20c-6 16-37 19-51 6c-10-9-3-18 10-26z" fill="#9DCCE0"/>
+        <g fill="#8DAA7D" opacity="0.85">
+          <circle cx="562" cy="54" r="8"/><circle cx="570" cy="82" r="7"/><circle cx="649" cy="91" r="8"/>
+        </g>
+
+        <!-- Simple city street network -->
+        <g fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" opacity="0.96">
+          <path d="M450 26v91M495 15v109M535 20v101M425 48h122M420 88h132"/>
+          <path d="M475 202v86M522 184v116M570 180v105M620 166v134M423 222h251M415 263h285"/>
+        </g>
+        <g fill="none" stroke="#C8C2B6" stroke-width="2" opacity="0.7">
+          <path d="M450 26v91M495 15v109M535 20v101M425 48h122M420 88h132"/>
+          <path d="M475 202v86M522 184v116M570 180v105M620 166v134M423 222h251M415 263h285"/>
+        </g>
+
+        <!-- Bridge and continued route -->
+        <path d="M342 157C380 157 397 167 426 179" fill="none" stroke="#827C72" stroke-width="31" stroke-linecap="round"/>
+        <path d="M344 157C380 157 399 167 427 179" fill="none" stroke="#D6D0C5" stroke-width="21" stroke-linecap="round"/>
+        <g stroke="#FFFFFF" stroke-width="3" opacity="0.85">
+          <path d="M354 146v24M367 147v25M380 150v25M393 154v25M406 159v24M418 164v22"/>
+        </g>
+        <path id="newRoutePath" d="M346 157C385 157 399 168 431 181C485 203 547 183 598 151C628 132 654 127 690 132"
+          fill="none" stroke="#25312F" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 17" marker-end="url(#routeArrow)"/>
+        <g id="newRouteLabel" opacity="0" style="transition:opacity .45s ease .35s">
+          <rect x="509" y="116" width="168" height="32" rx="16" fill="#2E6E6B"/>
+          <text id="newRouteText" x="593" y="137" text-anchor="middle" fill="#fff" font-family="Manrope,sans-serif" font-size="12.5" font-weight="800"></text>
+        </g>
+      </g>
     </g>
   `;
 
-  // put state icon above car
-  const carIcon = svg.querySelector('#carStateIcon');
-  const iconSvg = ICON[stateKey].replace('<svg', '<svg width="18" height="18"');
-  carIcon.innerHTML = iconSvg;
-
-  // labels text
-  svg.querySelector('#wallLabelText').textContent = T[lang].wallLabel;
-  svg.querySelector('#oldRoadLabelText').textContent = T[lang].oldRoadLabel;
-  svg.querySelector('#newRoadLabelText').textContent = T[lang].newRoadLabel;
-  svg.querySelector('#newRouteText').textContent = T[lang].newRoute;
+  svg.querySelector('#wallLabelText').textContent = T[lang].wallLabel.toUpperCase();
+  svg.querySelector('#newRouteText').textContent = T[lang].newRoute.toUpperCase();
 }
 
 function animateRoad() {
-  const svg = document.getElementById('mapSvg');
-  const road = svg.querySelector('#oldRoad');
-  const car = svg.querySelector('#carGroup');
-  const wall = svg.querySelector('#wallGroup');
-
-  // draw road
-  road.style.transition = 'stroke-dashoffset 1.6s ease';
-  requestAnimationFrame(() => { road.style.strokeDashoffset = '0'; });
-
-  // car drives along path
-  car.setAttribute('opacity', '1');
-  const path = svg.querySelector('#oldRoad');
-  const len = path.getTotalLength();
-  const dur = 1600;
-  let start = null;
-  function step(ts) {
-    if (!start) start = ts;
-    const prog = Math.min((ts - start) / dur, 1);
-    const pt = path.getPointAtLength(prog * len * 0.98);
-    car.setAttribute('transform', `translate(${pt.x},${pt.y})`);
-    if (prog < 1) requestAnimationFrame(step);
-    else {
-      // show wall + little bump
-      wall.setAttribute('opacity', '1');
-      wall.style.transition = 'opacity 0.4s';
-      bumpCar(car, pt);
-    }
-  }
-  requestAnimationFrame(step);
-}
-
-function bumpCar(car, pt) {
-  let t0 = null;
-  function b(ts) {
-    if (!t0) t0 = ts;
-    const p = (ts - t0) / 600;
-    if (p < 1) {
-      const off = Math.sin(p * Math.PI * 3) * 4 * (1 - p);
-      car.setAttribute('transform', `translate(${pt.x - Math.abs(off)},${pt.y})`);
-      requestAnimationFrame(b);
-    } else {
-      car.setAttribute('transform', `translate(${pt.x},${pt.y})`);
-    }
-  }
-  requestAnimationFrame(b);
+  const deadEnd = document.querySelector('#mapSvg #deadEndGroup');
+  if (!deadEnd) return;
+  deadEnd.style.transition = 'opacity .45s ease';
+  requestAnimationFrame(() => deadEnd.setAttribute('opacity', '1'));
 }
 
 function revealWall() {
@@ -1257,60 +1199,13 @@ function revealWall() {
   const svg = document.getElementById('mapSvg');
   document.getElementById('mapCtaHint').classList.add('hidden');
 
-  // wall becomes translucent
-  const wallRect = svg.querySelector('#wallRect');
-  svg.querySelector('#wallGroup').style.transition = 'opacity 0.5s';
-  svg.querySelector('#wallGroup').setAttribute('opacity', '0.35');
+  const farReveal = svg.querySelector('#farReveal');
+  const newRouteLabel = svg.querySelector('#newRouteLabel');
+  if (farReveal) farReveal.setAttribute('opacity', '1');
+  if (newRouteLabel) newRouteLabel.setAttribute('opacity', '1');
 
-  // habit marker appears
-  const habit = svg.querySelector('#habitMarker');
-  habit.style.transition = 'opacity 0.5s';
-  habit.setAttribute('opacity', '1');
-  setTimeout(() => {
-    ['oldRoadLabelBox','newRoadLabelBox'].forEach(id => {
-      const label = svg.querySelector('#' + id);
-      label.style.transition = 'opacity 0.5s';
-      label.setAttribute('opacity', '1');
-    });
-  }, 400);
-
-  // draw new road
-  setTimeout(() => {
-    const newRoad = svg.querySelector('#newRoadPath');
-    newRoad.setAttribute('opacity', '1');
-    newRoad.style.transition = 'stroke-dashoffset 1.3s ease';
-    newRoad.style.strokeDashoffset = '0';
-  }, 700);
-
-  // car moves to new route
-  setTimeout(() => moveCarNewRoute(), 1400);
-
-  // flag
-  setTimeout(() => {
-    const flag = svg.querySelector('#flagGroup');
-    flag.style.transition = 'opacity 0.5s';
-    flag.setAttribute('opacity', '1');
-  }, 2600);
-
-  // reveal insight blocks
-  setTimeout(() => revealInsights(), 1200);
-}
-
-function moveCarNewRoute() {
-  const svg = document.getElementById('mapSvg');
-  const car = svg.querySelector('#carGroup');
-  const path = svg.querySelector('#newRoadPath');
-  const len = path.getTotalLength();
-  const dur = 1400;
-  let start = null;
-  function step(ts) {
-    if (!start) start = ts;
-    const prog = Math.min((ts - start) / dur, 1);
-    const pt = path.getPointAtLength(prog * len);
-    car.setAttribute('transform', `translate(${pt.x},${pt.y})`);
-    if (prog < 1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
+  // Preserve the existing continuation: explanations and booking CTA appear after the map changes.
+  setTimeout(() => revealInsights(), 700);
 }
 
 function revealInsights() {
