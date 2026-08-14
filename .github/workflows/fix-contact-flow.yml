@@ -1,108 +1,13 @@
 name: Fix booking contact flow
 
 on:
-  workflow_run:
-    workflows: ["Add booking flow"]
-    types: [completed]
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  fix:
-    if: github.event.workflow_run.conclusion == 'success'
+  note:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-      - name: Fix contact screen and booking UX
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-
-          replacements={
-          'Варіант 1 — залиште ім’я і номер, і я сам напишу або зателефоную для підтвердження.':'Варіант 1 — залиште ім’я і номер та виберіть, у якому месенджері вам зручніше отримати підтвердження. Я напишу вам сам.',
-          'Вариант 1 — оставьте имя и номер, и я сам напишу или позвоню для подтверждения.':'Вариант 1 — оставьте имя и номер и выберите, в каком мессенджере вам удобнее получить подтверждение. Я напишу вам сам.',
-          'Варіант 2 — напишіть мені самі. Я вже отримаю в Telegram вибраний час і ваш коментар, а чат відкриється окремо.':'Варіант 2 — напишіть мені самі в одній зі зручних соцмереж або месенджерів. Я вже отримаю вибраний час і ваш коментар.',
-          'Вариант 2 — напишите мне сами. Я уже получу в Telegram выбранное время и ваш комментарий, а чат откроется отдельно.':'Вариант 2 — напишите мне сами в одной из удобных соцсетей или мессенджеров. Я уже получу выбранное время и ваш комментарий.',
-          'https://ig.me/m/anton_riakhin_psy':'https://ig.me/m/anton__riakhin__psy',
-          'https://www.instagram.com/anton.riahin/':'https://ig.me/m/anton__riakhin__psy',
-          'https://t.me/anton_riahin':'https://t.me/riakhin_anton',
-          "<button class=\"messenger-btn disabled\" type=\"button\" title=\"Додамо після підтвердження номера\">WhatsApp</button>":"<a class=\"messenger-btn messenger-whatsapp\" href=\"#\" onclick=\"openMessenger(event,'WhatsApp','https://wa.me/380935503707')\">◉ WhatsApp</a>",
-          "<button class=\"messenger-btn disabled\" type=\"button\" title=\"Додамо після підтвердження номера\">Viber</button>":"<a class=\"messenger-btn messenger-viber\" href=\"#\" onclick=\"openMessenger(event,'Viber','viber://chat?number=%2B380935503707')\">☎ Viber</a>",
-          '>Instagram</a>':'>◎ Instagram</a>',
-          '>Telegram</a>':'>➤ Telegram</a>',
-          '<p class=\"booking-note\" data-bk-uk=\"WhatsApp і Viber додамо, щойно зафіксуємо номер, на який мають вести кнопки.\" data-bk-ru=\"WhatsApp и Viber добавим, как только зафиксируем номер, на который должны вести кнопки.\"></p>':'<p class=\"booking-note\" data-bk-uk=\"Оберіть зручний спосіб — чат відкриється окремо.\" data-bk-ru=\"Выберите удобный способ — чат откроется отдельно.\"></p>',
-          "Хочу записатися на безкоштовну зустріч. Обрав(ла): ":"Хочу записатися на розбір. Обрав(ла): ",
-          "Хочу записаться на бесплатную встречу. Выбрал(а): ":"Хочу записаться на разбор. Выбрал(а): ",
-          'Нажмите здесь, чтобы увидеть новую дорогу':'Нажмите здесь, чтобы двигаться по новой дороге',
-          'Натисніть тут, щоб побачити нову дорогу':'Натисніть тут, щоб рухатися новою дорогою'
-          }
-          for a,b in replacements.items():
-              s=s.replace(a,b)
-
-          marker='<button class="booking-primary" id="bookingSubmitBtn" onclick="submitBooking()"'
-          if 'id="replyMessenger"' not in s and marker in s:
-              chooser='''<div class="form-field"><label class="form-label" data-bk-uk="Куди вам написати?" data-bk-ru="Куда вам написать?"></label><select class="form-input" id="replyMessenger"><option value="Telegram">Telegram</option><option value="WhatsApp">WhatsApp</option><option value="Viber">Viber</option><option value="Instagram">Instagram</option></select></div>'''
-              s=s.replace(marker,chooser+marker,1)
-
-          old="bookingPayload({mode:'form',contactChannel:'phone'})"
-          new="bookingPayload({mode:'form',contactChannel:(document.getElementById('replyMessenger')?.value||'Telegram')})"
-          s=s.replace(old,new)
-
-          # Make custom-time choice visually read as a real green CTA.
-          s=s.replace(".booking-secondary{width:100%;background:transparent;color:var(--teal-dark);border:1.5px dashed #B8C9C6;border-radius:14px;padding:15px 16px;font:700 14px 'Manrope',sans-serif;cursor:pointer;margin:8px 0 18px;text-align:left}",
-                      ".booking-secondary{width:100%;background:var(--teal-light);color:var(--teal-dark);border:1.5px solid var(--teal);border-radius:14px;padding:16px;font:800 14px 'Manrope',sans-serif;cursor:pointer;margin:12px 0 18px;text-align:left;box-shadow:0 3px 12px var(--teal-glow)}")
-
-          # Give messenger choices visible, light brand-tinted button states.
-          extra_css='''<style id="messenger-brand-buttons">
-          .messenger-btn{gap:8px;font-weight:800!important;border-width:1.5px!important}
-          .messengers .messenger-btn:nth-child(1){background:#FFF3F7;border-color:#EAC5D2;color:#8A3B5A}
-          .messengers .messenger-btn:nth-child(2){background:#EEF7FD;border-color:#B9DDF2;color:#23688E}
-          .messengers .messenger-btn:nth-child(3){background:#EFFAF2;border-color:#B9E0C3;color:#2C7540}
-          .messengers .messenger-btn:nth-child(4){background:#F5F0FA;border-color:#D7C3EA;color:#67418A}
-          .messengers .messenger-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(26,29,28,.08)}
-          </style>'''
-          if 'id="messenger-brand-buttons"' not in s:
-              s=s.replace('</head>',extra_css+'\n</head>',1)
-
-          # Opening after awaited fetch can be blocked. Navigate immediately; send lead in background.
-          oldfun="async function openMessenger(ev,channel,url){ev.preventDefault();const payload=bookingPayload({mode:'social_click',contact:'',contactChannel:channel});try{await fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})}catch(e){console.error(e)}try{gtag('event','contact_click',{channel:channel.toLowerCase(),booking_time:bookingDateLabel()})}catch(e){};const msg=(lang==='uk'?'Хочу записатися на розбір. Обрав(ла): ':'Хочу записаться на разбор. Выбрал(а): ')+bookingDateLabel()+(bookingComment?' — '+bookingComment:'');try{await navigator.clipboard.writeText(msg)}catch(e){};window.open(url,'_blank','noopener,noreferrer')}"
-          newfun="function openMessenger(ev,channel,url){ev.preventDefault();const msg=(lang==='uk'?'Хочу записатися на розбір. Обрав(ла): ':'Хочу записаться на разбор. Выбрал(а): ')+bookingDateLabel()+(bookingComment?' — '+bookingComment:'');try{navigator.clipboard&&navigator.clipboard.writeText(msg)}catch(e){};try{gtag('event','contact_click',{channel:channel.toLowerCase(),booking_time:bookingDateLabel()})}catch(e){};const payload=bookingPayload({mode:'social_click',contact:'',contactChannel:channel});try{const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});if(navigator.sendBeacon)navigator.sendBeacon('/api/send-lead',blob);else fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true}).catch(()=>{})}catch(e){};window.location.assign(url)}"
-          s=s.replace(oldfun,newfun)
-          # Also replace the already-patched location.href version if present.
-          oldfun2="function openMessenger(ev,channel,url){ev.preventDefault();const msg=(lang==='uk'?'Хочу записатися на розбір. Обрав(ла): ':'Хочу записаться на разбор. Выбрал(а): ')+bookingDateLabel()+(bookingComment?' — '+bookingComment:'');try{navigator.clipboard&&navigator.clipboard.writeText(msg)}catch(e){};try{gtag('event','contact_click',{channel:channel.toLowerCase(),booking_time:bookingDateLabel()})}catch(e){};const payload=bookingPayload({mode:'social_click',contact:'',contactChannel:channel});try{fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true}).catch(()=>{})}catch(e){};window.location.href=url}"
-          s=s.replace(oldfun2,newfun)
-
-          # Desktop QA helper: right-click time/custom-time controls to open target screen in a new tab.
-          qa_script='''<script id="desktop-booking-qa">
-          (function(){
-            const qs=new URLSearchParams(location.search);
-            const qa=qs.get('qaBooking');
-            function openQa(screen,label){
-              const u=new URL(location.href);u.searchParams.set('qaBooking',screen);if(label)u.searchParams.set('qaLabel',label);window.open(u.toString(),'_blank');
-            }
-            function bind(){
-              document.querySelectorAll('.slot-btn').forEach(b=>{if(b.dataset.qaBound)return;b.dataset.qaBound='1';b.addEventListener('contextmenu',e=>{e.preventDefault();openQa('comment',b.textContent.trim())})});
-              const c=document.querySelector('.booking-secondary');if(c&&!c.dataset.qaBound){c.dataset.qaBound='1';c.addEventListener('contextmenu',e=>{e.preventDefault();openQa('custom','')})}
-            }
-            new MutationObserver(bind).observe(document.documentElement,{subtree:true,childList:true});bind();
-            if(qa){window.addEventListener('load',()=>{setTimeout(()=>{try{if(qa==='custom'){goTo('customtime')}else if(qa==='comment'){bookingCustom='ТЕСТ: '+(qs.get('qaLabel')||'выбранное время');bookingDate='';bookingTime='';goTo('booking-comment');updateBookingSummary();renderBookingTexts()}}catch(e){console.error(e)}},100)})}
-          })();
-          </script>'''
-          if 'id="desktop-booking-qa"' not in s:
-              s=s.replace('</body>',qa_script+'\n</body>',1)
-
-          p.write_text(s,encoding='utf-8')
-          PY
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Polish messenger buttons and desktop booking QA"
-          git push
+      - run: echo "Legacy contact patch disabled; refinements are handled by Refine quiz flow."
