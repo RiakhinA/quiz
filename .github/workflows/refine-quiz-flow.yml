@@ -21,12 +21,31 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
 
+          # 1. CTA text in translation dictionaries.
           s=s.replace('mapCtaHint: "Натисни тут, щоб побачити нову дорогу"','mapCtaHint: "Натисніть тут, щоб рухатися новою дорогою"')
           s=s.replace('mapCtaHint: "Нажми здесь, чтобы увидеть новую дорогу"','mapCtaHint: "Нажмите здесь, чтобы двигаться по новой дороге"')
 
+          # 2. Restore the Instagram destination that previously worked in the quiz.
+          s=s.replace('https://www.instagram.com/anton__riakhin__psy/','https://ig.me/m/anton_riakhin_psy')
+          s=s.replace('https://ig.me/m/anton__riakhin__psy','https://ig.me/m/anton_riakhin_psy')
+
+          # 3. Contact copy + reply messenger selector.
+          s=s.replace('Варіант 1 — залиште ім’я і номер, і я сам напишу або зателефоную для підтвердження.','Варіант 1 — залиште ім’я і номер та виберіть, у якому месенджері вам зручніше отримати підтвердження. Я напишу вам сам.')
+          s=s.replace('Вариант 1 — оставьте имя и номер, и я сам напишу или позвоню для подтверждения.','Вариант 1 — оставьте имя и номер и выберите, в каком мессенджере вам удобнее получить подтверждение. Я напишу вам сам.')
+          s=s.replace('Варіант 2 — напишіть мені самі. Я вже отримаю в Telegram вибраний час і ваш коментар, а чат відкриється окремо.','Варіант 2 — напишіть мені самі в одній зі зручних соцмереж або месенджерів. Я вже отримаю вибраний час і ваш коментар.')
+          s=s.replace('Вариант 2 — напишите мне сами. Я уже получу в Telegram выбранное время и ваш комментарий, а чат откроется отдельно.','Вариант 2 — напишите мне сами в одной из удобных соцсетей или мессенджеров. Я уже получу выбранное время и ваш комментарий.')
+
+          marker='<button class="booking-primary" id="bookingSubmitBtn" onclick="submitBooking()"'
+          if 'id="replyMessenger"' not in s and marker in s:
+              chooser='''<div class="form-field"><label class="form-label" data-bk-uk="Куди вам написати?" data-bk-ru="Куда вам написать?"></label><select class="form-input" id="replyMessenger"><option value="Telegram">Telegram</option><option value="WhatsApp">WhatsApp</option><option value="Viber">Viber</option><option value="Instagram">Instagram</option></select></div>'''
+              s=s.replace(marker,chooser+marker,1)
+          s=s.replace("bookingPayload({mode:'form',contactChannel:'phone'})","bookingPayload({mode:'form',contactChannel:(document.getElementById('replyMessenger')?.value||'Telegram')})")
+
+          # 4. Messenger cards — real hrefs, recognizable icons, no href="#".
           css='''\n<style id="messenger-refine-css">\n.messengers .messenger-btn{background:#fff!important;border:1.5px solid var(--border)!important;color:var(--text)!important;gap:10px;min-height:58px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.03);display:flex;align-items:center;justify-content:center}\n.messengers .messenger-btn:hover{border-color:var(--teal)!important;background:#fff!important;transform:translateY(-1px)}\n.messenger-icon{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 22px}\n.messenger-icon svg{width:22px;height:22px;display:block}\n</style>\n'''
           if 'id="messenger-refine-css"' not in s:
               s=s.replace('</head>',css+'</head>',1)
@@ -35,15 +54,20 @@ jobs:
           tg='''<span class="messenger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#229ED9"><path d="M21.6 3.2 18.4 20c-.24 1.18-.87 1.47-1.76.92l-4.88-3.6-2.35 2.27c-.26.26-.48.48-.98.48l.35-4.98 9.07-8.2c.4-.35-.09-.55-.61-.2L6.03 13.75l-4.83-1.51c-1.05-.33-1.07-1.05.22-1.56L20.3 3.4c.88-.32 1.65.2 1.3-.2Z"/></svg></span><span>Telegram</span>'''
           wa='''<span class="messenger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#25D366"><circle cx="12" cy="12" r="9"/></svg></span><span>WhatsApp</span>'''
           vb='''<span class="messenger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#7360F2"><circle cx="12" cy="12" r="9"/></svg></span><span>Viber</span>'''
+          final=f'''<div class="messengers"><a class="messenger-btn" href="https://ig.me/m/anton_riakhin_psy" target="_blank" rel="noopener noreferrer" onclick="trackMessengerLink(event,'Instagram')">{ig}</a><a class="messenger-btn" href="https://t.me/riakhin_anton" target="_blank" rel="noopener noreferrer" onclick="trackMessengerLink(event,'Telegram')">{tg}</a><a class="messenger-btn" href="https://wa.me/380935503707" target="_blank" rel="noopener noreferrer" onclick="trackMessengerLink(event,'WhatsApp')">{wa}</a><a class="messenger-btn" href="viber://chat?number=%2B380935503707" onclick="trackMessengerLink(event,'Viber')">{vb}</a></div>'''
+          s=re.sub(r'<div class="messengers">.*?</div><p class="booking-note"',final+'<p class="booking-note"',s,count=1,flags=re.S)
+          s=s.replace('WhatsApp і Viber додамо, щойно зафіксуємо номер, на який мають вести кнопки.','Оберіть зручний спосіб — чат відкриється окремо.')
+          s=s.replace('WhatsApp и Viber добавим, как только зафиксируем номер, на который должны вести кнопки.','Выберите удобный способ — чат откроется отдельно.')
 
-          old='''<div class="messengers"><a class="messenger-btn" href="#" onclick="openMessenger(event,'Instagram','https://www.instagram.com/anton__riakhin__psy/')">◎ Instagram</a><a class="messenger-btn" href="#" onclick="openMessenger(event,'Telegram','https://t.me/riakhin_anton')">➤ Telegram</a><a class="messenger-btn messenger-whatsapp" href="#" onclick="openMessenger(event,'WhatsApp','https://wa.me/380935503707')">◉ WhatsApp</a><a class="messenger-btn messenger-viber" href="#" onclick="openMessenger(event,'Viber','viber://chat?number=%2B380935503707')">☎ Viber</a></div>'''
-          new=f'''<div class="messengers"><a class="messenger-btn" href="https://www.instagram.com/anton__riakhin__psy/" target="_blank" rel="noopener noreferrer" onclick="trackMessengerLink(event,'Instagram')">{ig}</a><a class="messenger-btn" href="https://t.me/riakhin_anton" target="_blank" rel="noopener noreferrer" onclick="trackMessengerLink(event,'Telegram')">{tg}</a><a class="messenger-btn messenger-whatsapp" href="https://wa.me/380935503707" target="_blank" rel="noopener noreferrer" onclick="trackMessengerLink(event,'WhatsApp')">{wa}</a><a class="messenger-btn messenger-viber" href="viber://chat?number=%2B380935503707" onclick="trackMessengerLink(event,'Viber')">{vb}</a></div>'''
-          s=s.replace(old,new)
-
-          marker="function trackMessengerOnly(channel){try{gtag('event','direct_contact_click',{channel:channel.toLowerCase()})}catch(e){}}"
+          # 5. Track in background; browser follows the anchor normally.
+          marker_js="function trackMessengerOnly(channel){try{gtag('event','direct_contact_click',{channel:channel.toLowerCase()})}catch(e){}}"
           if 'function trackMessengerLink(' not in s:
               extra="function trackMessengerLink(ev,channel){try{gtag('event','contact_click',{channel:channel.toLowerCase(),booking_time:bookingDateLabel()})}catch(e){};const payload=bookingPayload({mode:'social_click',contact:'',contactChannel:channel});try{const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});if(navigator.sendBeacon)navigator.sendBeacon('/api/send-lead',blob);else fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true}).catch(()=>{})}catch(e){}}\n"
-              s=s.replace(marker,extra+marker)
+              s=s.replace(marker_js,extra+marker_js)
+
+          # 6. Make custom-time action clearly clickable.
+          s=s.replace(".booking-secondary{width:100%;background:transparent;color:var(--teal-dark);border:1.5px dashed #B8C9C6;border-radius:14px;padding:15px 16px;font:700 14px 'Manrope',sans-serif;cursor:pointer;margin:8px 0 18px;text-align:left}",
+                      ".booking-secondary{width:100%;background:var(--teal-light);color:var(--teal-dark);border:1.5px solid var(--teal);border-radius:14px;padding:16px;font:800 14px 'Manrope',sans-serif;cursor:pointer;margin:12px 0 18px;text-align:left;box-shadow:0 3px 12px var(--teal-glow)}")
 
           p.write_text(s,encoding='utf-8')
           PY
@@ -53,5 +77,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Apply live quiz refinements"
+          git commit -m "Apply final booking refinements"
           git push
