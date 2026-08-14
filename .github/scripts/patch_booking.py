@@ -53,46 +53,29 @@ old_summary = "function updateBookingSummary(){const txt=bookingDateLabel();['bo
 new_summary = "function updateBookingSummary(){const txt=bookingDateLabel();const prefix=bookingCustom?(lang==='uk'?'Запропонований вами час: ':'Предложенное вами время: '):(lang==='uk'?'Обраний час: ':'Выбранное время: ');['bookingSelectedText','bookingFinalSelected'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=prefix+txt})}"
 s = s.replace(old_summary, new_summary)
 
-# 5) Definitive day/date fix: bind selected day/date directly onto every rendered slot.
-# This avoids relying on mutable global state between clicking a day tab and a time slot.
-old_render = "function renderSlots(){const g=document.getElementById('slotGrid');if(!g)return;g.innerHTML='';['11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'].forEach(t=>{const b=document.createElement('button');b.className='slot-btn';b.textContent=t;b.onclick=()=>selectSlot(t,b);g.appendChild(b)})}"
-new_render = "function renderSlots(){const g=document.getElementById('slotGrid');if(!g)return;g.innerHTML='';const slotDay=bookingDay;const slotDate=bookingDate;['11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'].forEach(t=>{const b=document.createElement('button');b.className='slot-btn';b.textContent=t;b.dataset.bookingDay=slotDay;b.dataset.bookingDate=slotDate||'';b.onclick=()=>selectSlot(t,b);g.appendChild(b)})}"
-s = s.replace(old_render, new_render)
+# 5) Day and time are one choice: each visual column owns its day.
+# Column 1 = today, column 2 = tomorrow, column 3 = another day.
+old_render_variants = [
+"function renderSlots(){const g=document.getElementById('slotGrid');if(!g)return;g.innerHTML='';const slotDay=bookingDay;const slotDate=bookingDate;['11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'].forEach(t=>{const b=document.createElement('button');b.className='slot-btn';b.textContent=t;b.dataset.bookingDay=slotDay;b.dataset.bookingDate=slotDate||'';b.onclick=()=>selectSlot(t,b);g.appendChild(b)})}",
+"function renderSlots(){const g=document.getElementById('slotGrid');if(!g)return;g.innerHTML='';['11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'].forEach(t=>{const b=document.createElement('button');b.className='slot-btn';b.textContent=t;b.onclick=()=>selectSlot(t,b);g.appendChild(b)})}"
+]
+new_render = "function renderSlots(){const g=document.getElementById('slotGrid');if(!g)return;g.innerHTML='';const times=['11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'];times.forEach((t,i)=>{const col=i%3;const day=col===0?'today':col===1?'tomorrow':'other';const b=document.createElement('button');b.className='slot-btn';b.textContent=t;b.dataset.bookingDay=day;b.dataset.bookingDate=(day==='other'?(bookingDate||''):'');b.onclick=()=>selectSlot(t,b);g.appendChild(b)})}"
+for old_render in old_render_variants:
+    s = s.replace(old_render, new_render)
 
-old_slot = "function selectSlot(t,b){try{bookingDay=sessionStorage.getItem('bookingDay')||bookingDay;bookingDate=sessionStorage.getItem('bookingDate')||bookingDate}catch(e){};if(bookingDay==='other'&&!bookingDate){document.getElementById('bookingDateInput').focus();return}bookingTime=t;bookingCustom='';document.querySelectorAll('.slot-btn').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');try{gtag('event','time_selected',{time:t,day:bookingDay})}catch(e){};setTimeout(()=>{goTo('booking-comment');updateBookingSummary();renderBookingTexts()},180)}"
-new_slot = "function selectSlot(t,b){const clickedDay=(b&&b.dataset&&b.dataset.bookingDay)||bookingDay||'today';const clickedDate=(b&&b.dataset&&b.dataset.bookingDate)||bookingDate||'';bookingDay=clickedDay;bookingDate=clickedDate;try{sessionStorage.setItem('bookingDay',bookingDay);if(bookingDate)sessionStorage.setItem('bookingDate',bookingDate);else sessionStorage.removeItem('bookingDate')}catch(e){};if(bookingDay==='other'&&!bookingDate){document.getElementById('bookingDateInput').focus();return}bookingTime=t;bookingCustom='';document.querySelectorAll('.slot-btn').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');try{gtag('event','time_selected',{time:t,day:bookingDay})}catch(e){};setTimeout(()=>{goTo('booking-comment');updateBookingSummary();renderBookingTexts()},180)}"
-s = s.replace(old_slot, new_slot)
+old_slot_variants = [
+"function selectSlot(t,b){const clickedDay=(b&&b.dataset&&b.dataset.bookingDay)||bookingDay||'today';const clickedDate=(b&&b.dataset&&b.dataset.bookingDate)||bookingDate||'';bookingDay=clickedDay;bookingDate=clickedDate;try{sessionStorage.setItem('bookingDay',bookingDay);if(bookingDate)sessionStorage.setItem('bookingDate',bookingDate);else sessionStorage.removeItem('bookingDate')}catch(e){};if(bookingDay==='other'&&!bookingDate){document.getElementById('bookingDateInput').focus();return}bookingTime=t;bookingCustom='';document.querySelectorAll('.slot-btn').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');try{gtag('event','time_selected',{time:t,day:bookingDay})}catch(e){};setTimeout(()=>{goTo('booking-comment');updateBookingSummary();renderBookingTexts()},180)}",
+"function selectSlot(t,b){try{bookingDay=sessionStorage.getItem('bookingDay')||bookingDay;bookingDate=sessionStorage.getItem('bookingDate')||bookingDate}catch(e){};if(bookingDay==='other'&&!bookingDate){document.getElementById('bookingDateInput').focus();return}bookingTime=t;bookingCustom='';document.querySelectorAll('.slot-btn').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');try{gtag('event','time_selected',{time:t,day:bookingDay})}catch(e){};setTimeout(()=>{goTo('booking-comment');updateBookingSummary();renderBookingTexts()},180)}"
+]
+new_slot = "function selectSlot(t,b){const clickedDay=(b&&b.dataset&&b.dataset.bookingDay)||'today';bookingDay=clickedDay;if(bookingDay!=='other')bookingDate='';try{sessionStorage.setItem('bookingDay',bookingDay);if(bookingDate)sessionStorage.setItem('bookingDate',bookingDate);else sessionStorage.removeItem('bookingDate')}catch(e){};document.querySelectorAll('.day-btn').forEach(x=>x.classList.remove('selected'));const dayBtns=[...document.querySelectorAll('.day-btn')];const dayIndex=bookingDay==='today'?0:bookingDay==='tomorrow'?1:2;if(dayBtns[dayIndex])dayBtns[dayIndex].classList.add('selected');if(bookingDay==='other'&&!bookingDate){const w=document.getElementById('otherDateWrap');if(w)w.classList.add('show');const inp=document.getElementById('bookingDateInput');if(inp){inp.focus();inp.scrollIntoView({behavior:'smooth',block:'center'})}return}bookingTime=t;bookingCustom='';document.querySelectorAll('.slot-btn').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');try{gtag('event','time_selected',{time:t,day:bookingDay})}catch(e){};setTimeout(()=>{goTo('booking-comment');updateBookingSummary();renderBookingTexts()},180)}"
+for old_slot in old_slot_variants:
+    s = s.replace(old_slot, new_slot)
 
-# 6) Keep selected day/date independently as a fallback.
-if 'id="booking-day-persistence-fix"' not in s:
-    day_fix = r'''
-<script id="booking-day-persistence-fix">
-(function(){
-  function setDayState(day){
-    try{sessionStorage.setItem('bookingDay',day);if(day!=='other')sessionStorage.removeItem('bookingDate')}catch(e){}
-    try{bookingDay=day;if(day!=='other')bookingDate=''}catch(e){}
-  }
-  document.addEventListener('click',function(e){
-    const dayBtn=e.target.closest && e.target.closest('.day-btn');
-    if(dayBtn){
-      const ru=(dayBtn.getAttribute('data-bk-ru')||dayBtn.textContent||'').trim().toLowerCase();
-      const uk=(dayBtn.getAttribute('data-bk-uk')||'').trim().toLowerCase();
-      if(ru.includes('завтра')||uk.includes('завтра')) setDayState('tomorrow');
-      else if(ru.includes('другой')||uk.includes('інший')) setDayState('other');
-      else setDayState('today');
-    }
-  },true);
-  document.addEventListener('change',function(e){
-    if(e.target && e.target.id==='bookingDateInput'){
-      const v=e.target.value||'';
-      try{sessionStorage.setItem('bookingDay','other');sessionStorage.setItem('bookingDate',v)}catch(err){}
-      try{bookingDay='other';bookingDate=v}catch(err){}
-    }
-  },true);
-})();
-</script>
-'''
-    s = s.replace('</body>', day_fix + '\n</body>', 1)
+# 6) Clicking a day header only highlights its column; selecting a time remains the actual booking choice.
+# For "other day", show date picker immediately.
+old_select_day = "function selectDay(day,el){bookingDay=day;bookingDate='';try{sessionStorage.setItem('bookingDay',day);sessionStorage.removeItem('bookingDate')}catch(e){};document.querySelectorAll('.day-btn').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');const w=document.getElementById('otherDateWrap');w.classList.toggle('show',day==='other');if(day!=='other')renderSlots()}"
+new_select_day = "function selectDay(day,el){bookingDay=day;if(day!=='other')bookingDate='';try{sessionStorage.setItem('bookingDay',day);if(day!=='other')sessionStorage.removeItem('bookingDate')}catch(e){};document.querySelectorAll('.day-btn').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');const w=document.getElementById('otherDateWrap');if(w)w.classList.toggle('show',day==='other');if(day==='other'){const inp=document.getElementById('bookingDateInput');if(inp)inp.focus()}renderSlots()}"
+s = s.replace(old_select_day, new_select_day)
 
 # 7) Desktop QA carries name/phone/day/date into the test tab.
 old_openqa = """  function openQa(screen,label){\n    const u=new URL(location.href);u.searchParams.set('qaBooking',screen);if(label)u.searchParams.set('qaLabel',label);window.open(u.toString(),'_blank');\n  }"""
