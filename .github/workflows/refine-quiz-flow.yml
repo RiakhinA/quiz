@@ -1,8 +1,9 @@
 name: Refine quiz flow
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: ["Add booking flow"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -10,10 +11,12 @@ permissions:
 
 jobs:
   patch:
-    if: github.actor != 'github-actions[bot]'
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - name: Patch current quiz UI
         run: |
           python - <<'PY'
@@ -21,35 +24,23 @@ jobs:
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
 
-          # Map CTA lives in translation objects, so patch the actual values.
-          s=s.replace('mapCtaHint: "Натисни тут, щоб побачити нову дорогу"',
-                      'mapCtaHint: "Натисніть тут, щоб рухатися новою дорогою"')
-          s=s.replace('mapCtaHint: "Нажми здесь, чтобы увидеть новую дорогу"',
-                      'mapCtaHint: "Нажмите здесь, чтобы двигаться по новой дороге"')
+          s=s.replace('mapCtaHint: "Натисни тут, щоб побачити нову дорогу"','mapCtaHint: "Натисніть тут, щоб рухатися новою дорогою"')
+          s=s.replace('mapCtaHint: "Нажми здесь, чтобы увидеть новую дорогу"','mapCtaHint: "Нажмите здесь, чтобы двигаться по новой дороге"')
 
-          # Messenger visual style: white cards with real service icons.
           css='''\n<style id="messenger-refine-css">\n.messengers .messenger-btn{background:#fff!important;border:1.5px solid var(--border)!important;color:var(--text)!important;gap:10px;min-height:58px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.03);display:flex;align-items:center;justify-content:center}\n.messengers .messenger-btn:hover{border-color:var(--teal)!important;background:#fff!important;transform:translateY(-1px)}\n.messenger-icon{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 22px}\n.messenger-icon svg{width:22px;height:22px;display:block}\n</style>\n'''
           if 'id="messenger-refine-css"' not in s:
               s=s.replace('</head>',css+'</head>',1)
 
           ig='''<span class="messenger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#C13584" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="#C13584" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="#C13584"/></svg></span><span>Instagram</span>'''
           tg='''<span class="messenger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#229ED9"><path d="M21.6 3.2 18.4 20c-.24 1.18-.87 1.47-1.76.92l-4.88-3.6-2.35 2.27c-.26.26-.48.48-.98.48l.35-4.98 9.07-8.2c.4-.35-.09-.55-.61-.2L6.03 13.75l-4.83-1.51c-1.05-.33-1.07-1.05.22-1.56L20.3 3.4c.88-.32 1.65.2 1.3-.2Z"/></svg></span><span>Telegram</span>'''
-          wa='''<span class="messenger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#25D366"><path d="M12 2a9.8 9.8 0 0 0-8.4 14.85L2 22l5.3-1.55A9.97 9.97 0 1 0 12 2Zm0 17.9a7.8 7.8 0 0 1-4-1.1l-.29-.17-3.14.92.94-3.06-.19-.31A7.87 7.87 0 1 1 12 19.9Z"/></svg></span><span>WhatsApp</span>'''
-          vb='''<span class="messenger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#7360F2"><path d="M12 2C6.48 2 2 5.86 2 10.62c0 2.72 1.48 5.15 3.79 6.73L5 22l4.58-2.52c.78.17 1.59.26 2.42.26 5.52 0 10-3.86 10-8.62S17.52 2 12 2Z"/></svg></span><span>Viber</span>'''
+          wa='''<span class="messenger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#25D366"><circle cx="12" cy="12" r="9"/></svg></span><span>WhatsApp</span>'''
+          vb='''<span class="messenger-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#7360F2"><circle cx="12" cy="12" r="9"/></svg></span><span>Viber</span>'''
 
-          # Give every final messenger anchor a real destination in href so normal click and right-click/new-tab work.
           old='''<div class="messengers"><a class="messenger-btn" href="#" onclick="openMessenger(event,'Instagram','https://www.instagram.com/anton__riakhin__psy/')">◎ Instagram</a><a class="messenger-btn" href="#" onclick="openMessenger(event,'Telegram','https://t.me/riakhin_anton')">➤ Telegram</a><a class="messenger-btn messenger-whatsapp" href="#" onclick="openMessenger(event,'WhatsApp','https://wa.me/380935503707')">◉ WhatsApp</a><a class="messenger-btn messenger-viber" href="#" onclick="openMessenger(event,'Viber','viber://chat?number=%2B380935503707')">☎ Viber</a></div>'''
           new=f'''<div class="messengers"><a class="messenger-btn" href="https://www.instagram.com/anton__riakhin__psy/" target="_blank" rel="noopener noreferrer" onclick="trackMessengerLink(event,'Instagram')">{ig}</a><a class="messenger-btn" href="https://t.me/riakhin_anton" target="_blank" rel="noopener noreferrer" onclick="trackMessengerLink(event,'Telegram')">{tg}</a><a class="messenger-btn messenger-whatsapp" href="https://wa.me/380935503707" target="_blank" rel="noopener noreferrer" onclick="trackMessengerLink(event,'WhatsApp')">{wa}</a><a class="messenger-btn messenger-viber" href="viber://chat?number=%2B380935503707" onclick="trackMessengerLink(event,'Viber')">{vb}</a></div>'''
           s=s.replace(old,new)
 
-          # If an older enhanced version exists, at minimum replace href=# links individually.
-          s=s.replace('href="#" onclick="openMessenger(event,\'Instagram\',\'https://www.instagram.com/anton__riakhin__psy/\')"','href="https://www.instagram.com/anton__riakhin__psy/" target="_blank" rel="noopener noreferrer" onclick="trackMessengerLink(event,\'Instagram\')"')
-          s=s.replace('href="#" onclick="openMessenger(event,\'Telegram\',\'https://t.me/riakhin_anton\')"','href="https://t.me/riakhin_anton" target="_blank" rel="noopener noreferrer" onclick="trackMessengerLink(event,\'Telegram\')"')
-          s=s.replace('href="#" onclick="openMessenger(event,\'WhatsApp\',\'https://wa.me/380935503707\')"','href="https://wa.me/380935503707" target="_blank" rel="noopener noreferrer" onclick="trackMessengerLink(event,\'WhatsApp\')"')
-          s=s.replace('href="#" onclick="openMessenger(event,\'Viber\',\'viber://chat?number=%2B380935503707\')"','href="viber://chat?number=%2B380935503707" onclick="trackMessengerLink(event,\'Viber\')"')
-
-          # Tracking must never cancel navigation.
-          marker='function trackMessengerOnly(channel){try{gtag(\'event\',\'direct_contact_click\',{channel:channel.toLowerCase()})}catch(e){}}'
+          marker="function trackMessengerOnly(channel){try{gtag('event','direct_contact_click',{channel:channel.toLowerCase()})}catch(e){}}"
           if 'function trackMessengerLink(' not in s:
               extra="function trackMessengerLink(ev,channel){try{gtag('event','contact_click',{channel:channel.toLowerCase(),booking_time:bookingDateLabel()})}catch(e){};const payload=bookingPayload({mode:'social_click',contact:'',contactChannel:channel});try{const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});if(navigator.sendBeacon)navigator.sendBeacon('/api/send-lead',blob);else fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true}).catch(()=>{})}catch(e){}}\n"
               s=s.replace(marker,extra+marker)
@@ -62,5 +53,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Fix live CTA and messenger links"
+          git commit -m "Apply live quiz refinements"
           git push
