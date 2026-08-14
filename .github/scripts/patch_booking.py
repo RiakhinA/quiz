@@ -77,12 +77,18 @@ old_select_day = "function selectDay(day,el){bookingDay=day;bookingDate='';try{s
 new_select_day = "function selectDay(day,el){bookingDay=day;if(day!=='other')bookingDate='';try{sessionStorage.setItem('bookingDay',day);if(day!=='other')sessionStorage.removeItem('bookingDate')}catch(e){};document.querySelectorAll('.day-btn').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');const w=document.getElementById('otherDateWrap');if(w)w.classList.toggle('show',day==='other');if(day==='other'){const inp=document.getElementById('bookingDateInput');if(inp)inp.focus()}renderSlots()}"
 s = s.replace(old_select_day, new_select_day)
 
-# 7) Desktop QA carries name/phone/day/date into the test tab.
-old_openqa = """  function openQa(screen,label){\n    const u=new URL(location.href);u.searchParams.set('qaBooking',screen);if(label)u.searchParams.set('qaLabel',label);window.open(u.toString(),'_blank');\n  }"""
-new_openqa = """  function openQa(screen,label){\n    const u=new URL(location.href);\n    u.searchParams.set('qaBooking',screen);\n    if(label)u.searchParams.set('qaLabel',label);\n    const n=document.getElementById('inputName')?.value||document.getElementById('finalName')?.value||'';\n    const c=document.getElementById('inputContact')?.value||document.getElementById('finalContact')?.value||'';\n    if(n)u.searchParams.set('qaName',n);else u.searchParams.delete('qaName');\n    if(c)u.searchParams.set('qaPhone',c);else u.searchParams.delete('qaPhone');\n    const savedDay=sessionStorage.getItem('bookingDay')||((typeof bookingDay!=='undefined')?bookingDay:'today');\n    const savedDate=sessionStorage.getItem('bookingDate')||((typeof bookingDate!=='undefined')?bookingDate:'');\n    u.searchParams.set('qaDay',savedDay);\n    if(savedDate)u.searchParams.set('qaDate',savedDate);else u.searchParams.delete('qaDate');\n    window.open(u.toString(),'_blank');\n  }"""
+# 7) Callback-by-phone flow: Instagram is intentionally NOT offered here.
+# A phone number is enough for Telegram / WhatsApp / Viber, but not a reliable Instagram identifier.
+# Keep the standalone Instagram button in the "write me yourself" block untouched.
+s = s.replace('<option value="Instagram">Instagram</option>', '')
+s = s.replace('<option>Instagram</option>', '')
+
+# 8) Desktop QA carries name/phone/day/date into the test tab.
+old_openqa = """  function openQa(screen,label){\n    const u=new URL(location.href);\n    u.searchParams.set('qaBooking',screen);\n    if(label)u.searchParams.set('qaLabel',label);\n    const n=document.getElementById('inputName')?.value||document.getElementById('finalName')?.value||'';\n    const c=document.getElementById('inputContact')?.value||document.getElementById('finalContact')?.value||'';\n    if(n)u.searchParams.set('qaName',n);else u.searchParams.delete('qaName');\n    if(c)u.searchParams.set('qaPhone',c);else u.searchParams.delete('qaPhone');\n    const savedDay=sessionStorage.getItem('bookingDay')||((typeof bookingDay!=='undefined')?bookingDay:'today');\n    const savedDate=sessionStorage.getItem('bookingDate')||((typeof bookingDate!=='undefined')?bookingDate:'');\n    u.searchParams.set('qaDay',savedDay);\n    if(savedDate)u.searchParams.set('qaDate',savedDate);else u.searchParams.delete('qaDate');\n    window.open(u.toString(),'_blank');\n  }"""
+new_openqa = old_openqa
 s = s.replace(old_openqa, new_openqa)
 
-# 8) Viber fallback if direct personal chat doesn't open.
+# 9) Viber fallback if direct personal chat doesn't open.
 s = s.replace(
     '<a class="messenger-btn" href="viber://chat?number=%2B380935503707" onclick="trackMessengerLink(event,\'Viber\')">',
     '<a class="messenger-btn" href="viber://chat?number=%2B380935503707" onclick="return openViberFallback(event)">'
