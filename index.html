@@ -747,7 +747,7 @@ const T = {
     ls2: "Прокладаємо ваш маршрут...",
     ls3: "Знаходимо, де тупик...",
     resultTitle: "Ось ваша карта. І ось де тупик.",
-    mapCtaHint: "Натисни тут, щоб побачити нову дорогу",
+    mapCtaHint: "Натисніть тут, щоб рухатися новою дорогою",
     ib1label: "По-старому не працює",
     ib1p1: "Будь-яка криза - це момент, коли старою дорогою вже не виходить їхати. По-старому не працює, а по-новому поки незрозуміло як. Можливо, змінилася сама дорога, можливо, точка призначення, а може, тобі просто більше не підходить колишній маршрут.",
     ib1p2: "Колись звичні способи справлятися справді допомагали: не показувати емоції та ігнорувати бажання, промовчати, потерпіти або зробити все самому. Але те, що раніше допомагало рухатися далі, з часом може почати працювати проти тебе. Тепер це може призводити до виснаження, закритості, втрати близькості, постійної критики себе та інших, накопичення напруги або відчуття, що ти знову і знову опиняєшся в одній і тій самій точці.",
@@ -847,7 +847,7 @@ const T = {
     ls2: "Прокладываем ваш маршрут...",
     ls3: "Находим, где тупик...",
     resultTitle: "Вот ваша карта. И вот где тупик.",
-    mapCtaHint: "Нажми здесь, чтобы увидеть новую дорогу",
+    mapCtaHint: "Нажмите здесь, чтобы двигаться по новой дороге",
     ib1label: "По-старому не работает",
     ib1p1: "Любой кризис - это момент, когда по старой дороге уже не получается ехать. По-старому не работает, а по-новому пока непонятно как. Возможно, изменилась сама дорога, возможно, точка назначения, а может быть, тебе просто больше не подходит прежний маршрут.",
     ib1p2: "Когда-то привычные способы справляться действительно помогали: не показывать эмоции и игнорировать желания, промолчать, потерпеть или сделать всё самому. Но то, что раньше помогало двигаться дальше, со временем может начать работать против тебя. Теперь это может приводить к истощению, закрытости, потере близости, постоянной критике себя и других, накоплению напряжения или ощущению, что ты снова и снова оказываешься в одной и той же точке.",
@@ -1318,6 +1318,7 @@ function continueToContact(){bookingComment=(document.getElementById('bookingCom
 function bookingPayload(extra={}){const qs=T[lang].questions;const answerTexts=qs.map((q,i)=>(answerIdx[i]||[]).map(idx=>q.opts[idx]?.t).filter(Boolean).join(', '));return {name:(document.getElementById('finalName')?.value||document.getElementById('inputName')?.value||'').trim(),contact:(document.getElementById('finalContact')?.value||document.getElementById('inputContact')?.value||'').trim(),lang,answerTexts,questions:qs.map(q=>q.q),utm,bookingDate:bookingCustom?'':bookingDateLabel().replace(bookingTime,'').replace(/,\s*$/,''),bookingTime,bookingCustom,bookingComment,...extra}}
 async function submitBooking(){const nameEl=document.getElementById('finalName'),contactEl=document.getElementById('finalContact');const name=nameEl.value.trim(),contact=contactEl.value.trim();let ok=true;if(!name){nameEl.classList.add('error');ok=false}if(!validContact(contact)){contactEl.classList.add('error');ok=false}if(!ok)return;userName=name;const btn=document.getElementById('bookingSubmitBtn');btn.disabled=true;try{const r=await fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(bookingPayload({mode:'form',contactChannel:'phone'}))});if(!r.ok)throw new Error('lead '+r.status);try{gtag('event','booking_submit',{method:'phone'})}catch(e){};try{if(typeof fbq==='function')fbq('track','Lead')}catch(e){};showThanks()}catch(e){console.error(e);btn.disabled=false;alert(lang==='uk'?'Не вдалося надіслати заявку. Спробуйте ще раз.':'Не удалось отправить заявку. Попробуйте ещё раз.')}}
 async function openMessenger(ev,channel,url){ev.preventDefault();const payload=bookingPayload({mode:'social_click',contact:'',contactChannel:channel});try{await fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})}catch(e){console.error(e)}try{gtag('event','contact_click',{channel:channel.toLowerCase(),booking_time:bookingDateLabel()})}catch(e){};const msg=(lang==='uk'?'Хочу записатися на безкоштовну зустріч. Обрав(ла): ':'Хочу записаться на бесплатную встречу. Выбрал(а): ')+bookingDateLabel()+(bookingComment?' — '+bookingComment:'');try{await navigator.clipboard.writeText(msg)}catch(e){};window.open(url,'_blank','noopener,noreferrer')}
+function trackMessengerLink(ev,channel){try{gtag('event','contact_click',{channel:channel.toLowerCase(),booking_time:bookingDateLabel()})}catch(e){};const payload=bookingPayload({mode:'social_click',contact:'',contactChannel:channel});try{const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});if(navigator.sendBeacon)navigator.sendBeacon('/api/send-lead',blob);else fetch('/api/send-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true}).catch(()=>{})}catch(e){}}
 function trackMessengerOnly(channel){try{gtag('event','direct_contact_click',{channel:channel.toLowerCase()})}catch(e){}}
 // BOOKING_FLOW_JS_END
 
